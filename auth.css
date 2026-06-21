@@ -14,10 +14,11 @@ body{background:var(--off);color:var(--blk);font-family:var(--fb);font-size:15px
 *{-webkit-user-select:none;user-select:none}
 input{-webkit-user-select:text;user-select:text}
 img{-webkit-user-drag:none;pointer-events:none}
+a,button,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:99px}
 
 /* NAV */
-.anav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nh);background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 5%}
+.anav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nh);background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 5%}
 .anav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--blk);font-size:1.05rem;font-weight:700}
 .anav-logo img{width:28px;height:28px;border-radius:6px;object-fit:contain}
 .anav-logo strong{color:var(--acc)}
@@ -135,4 +136,10 @@ img{-webkit-user-drag:none;pointer-events:none}
   .sinfo-row{flex-direction:column;align-items:flex-start;gap:3px}
   .sinfo-v{text-align:left;max-width:100%}
   .ssignout-zone{flex-direction:column;align-items:flex-start}
+}
+
+/* MOTION / PERFORMANCE — respect OS-level reduce-motion */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
