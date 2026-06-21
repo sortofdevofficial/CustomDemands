@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account — Custom Demands</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="auth.css"/>
+</head>
+<body>
+  <nav class="anav">
+    <a href="index.html" class="anav-logo">
+      <img src="favicon.png" alt="Custom Demands" width="28" height="28"/>
+      <span>Custom<strong>Demands</strong></span>
+    </a>
+    <a href="index.html" class="anav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to site
+    </a>
+  </nav>
+
+  <div class="redir-overlay" id="redirOverlay">
+    <div class="redir-spin"></div>
+    <p>Redirecting…</p>
+  </div>
+
+  <main class="amain">
+
+    <!-- SCREEN 1: SIGN IN -->
+    <section class="ascreen" id="screenSignIn">
+      <div class="acard">
+        <div class="abrand">
+          <img src="favicon.png" alt="CD" class="abrand-ico"/>
+          <div><div class="abrand-name">Custom<span>Demands</span></div><div class="abrand-sub">Sign in to your account</div></div>
+        </div>
+        <h1 class="ahead">Welcome Back</h1>
+        <p class="asub">Sign in to manage your orders and account settings.</p>
+        <button class="btn-google" id="btnGoogle">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <p class="aerr" id="signInError"></p>
+        <p class="aterms">By signing in you agree to our terms. Data stored securely.</p>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: ALREADY SIGNED IN -->
+    <section class="ascreen" id="screenAlready" style="display:none">
+      <div class="acard">
+        <div class="abrand">
+          <img src="favicon.png" alt="CD" class="abrand-ico"/>
+          <div><div class="abrand-name">Custom<span>Demands</span></div><div class="abrand-sub">You're logged in</div></div>
+        </div>
+        <div class="already-wrap">
+          <img src="" alt="" id="alreadyAvatar" class="already-avatar"/>
+          <div class="already-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <h1 class="ahead" id="alreadyTitle">Hey, @user</h1>
+        <p class="asub" id="alreadyEmail">email</p>
+        <p class="already-note">You're already signed in to Custom Demands.</p>
+        <a href="index.html" class="btn-full">Go to Homepage</a>
+        <a href="auth.html?settings" class="btn-full outline" style="margin-top:10px">Open Settings</a>
+        <button class="btn-signout-alt" id="btnAlreadySignOut">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign out of this account
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: PICK USERNAME -->
+    <section class="ascreen" id="screenUsername" style="display:none">
+      <div class="acard">
+        <div class="abrand">
+          <img src="favicon.png" alt="CD" class="abrand-ico"/>
+          <div><div class="abrand-name">Custom<span>Demands</span></div><div class="abrand-sub">One last step</div></div>
+        </div>
+        <h1 class="ahead">Pick a Username</h1>
+        <p class="asub">Choose a unique username for your Custom Demands profile.</p>
+        <div class="user-prev">
+          <img src="" alt="" id="upAvatar" class="user-prev-img"/>
+          <div><div class="user-prev-name" id="upName">Name</div><div class="user-prev-email" id="upEmail">email</div></div>
+        </div>
+        <div class="afield">
+          <label class="alabel" for="unInput">Username</label>
+          <div class="ainput-wrap"><span class="ainput-pre">@</span><input id="unInput" type="text" class="ainput" placeholder="yourcoolname" maxlength="24" autocomplete="off" spellcheck="false"/></div>
+          <p class="ahint">3–24 chars · Letters, numbers, underscores</p>
+        </div>
+        <p class="aerr" id="unError"></p>
+        <button class="btn-full" id="btnSaveUsername">Save &amp; Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: SETTINGS -->
+    <section class="ascreen wide" id="screenSettings" style="display:none">
+      <div class="acard wide">
+        <div class="sprofile">
+          <img src="" alt="" id="spAvatar" class="sprofile-img"/>
+          <div>
+            <div class="sprofile-un"    id="spUsername">@username</div>
+            <div class="sprofile-email" id="spEmail">email</div>
+            <div class="sprofile-since" id="spSince">Member since —</div>
+          </div>
+        </div>
+        <div class="stabs">
+          <button class="stab active" data-panel="panelProfile">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Profile
+          </button>
+          <button class="stab" data-panel="panelAccount">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Account
+          </button>
+        </div>
+        <div class="spanel active" id="panelProfile">
+          <h2 class="spanel-title">Edit Profile</h2>
+          <div class="afield">
+            <label class="alabel" for="settingsUsername">Username</label>
+            <div class="ainput-wrap"><span class="ainput-pre">@</span><input id="settingsUsername" type="text" class="ainput" placeholder="username" maxlength="24" autocomplete="off" spellcheck="false"/></div>
+            <p class="ahint">3–24 chars · Letters, numbers, underscores</p>
+          </div>
+          <p class="aerr" id="sError"></p>
+          <p class="aok"  id="sSuccess"></p>
+          <button class="btn-full" id="btnSaveSettings">Save Changes</button>
+        </div>
+        <div class="spanel" id="panelAccount">
+          <h2 class="spanel-title">Account Info</h2>
+          <div class="sinfo-list">
+            <div class="sinfo-row"><span class="sinfo-k">Display Name</span><span class="sinfo-v" id="infoName">—</span></div>
+            <div class="sinfo-row"><span class="sinfo-k">Email</span>       <span class="sinfo-v" id="infoEmail">—</span></div>
+            <div class="sinfo-row"><span class="sinfo-k">Provider</span>    <span class="sinfo-v">Google</span></div>
+            <div class="sinfo-row"><span class="sinfo-k">User ID</span>     <span class="sinfo-v mono" id="infoUID">—</span></div>
+          </div>
+          <div class="ssignout-zone">
+            <p class="ssignout-lbl">End your current session</p>
+            <button class="btn-signout" id="btnSignOut">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
