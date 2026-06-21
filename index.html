@@ -509,14 +509,11 @@
     </div>
   </footer>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script>
-    (function(){
-      const cfg={apiKey:"AIzaSyDuVgf-2jF10A8XQR7RZY7s9Ero8Y4KrII",authDomain:"custom-demands.firebaseapp.com",projectId:"custom-demands",storageBucket:"custom-demands.firebasestorage.app",messagingSenderId:"885129813571",appId:"1:885129813571:web:0891ca8dee84b80bdb3ef6",databaseURL:"https://custom-demands-default-rtdb.firebaseio.com"};
-      if(!firebase.apps.length) firebase.initializeApp(cfg);
-    })();
+  <!-- Firebase: initialized once in firebase.js, then bridged to window.CD
+       so the classic index.js (needed for inline onclick="" handlers) can use it. -->
+  <script type="module">
+    import { auth, db, onAuthStateChanged, signOut, ref, get } from './firebase.js';
+    window.CD = { auth, db, onAuthStateChanged, signOut, ref, get };
   </script>
   <script src="index.js"></script>
 </body>

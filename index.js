@@ -495,8 +495,23 @@ function initContactForm() {
   });
 }
 
+/* ════════════════ FIREBASE BRIDGE ════════════════ */
+/* index.js is a classic (non-module) script — kept that way because inline
+   onclick="" handlers in the HTML need its functions on window. Firebase
+   itself is initialized once in firebase.js (ES module) and exposed here
+   via window.CD. Since the module script may resolve a tick after this
+   classic script starts, we wait for it instead of assuming it's ready. */
+function waitForCD() {
+  return new Promise(resolve => {
+    if (window.CD) return resolve(window.CD);
+    const iv = setInterval(() => {
+      if (window.CD) { clearInterval(iv); resolve(window.CD); }
+    }, 30);
+  });
+}
+
 /* ════════════════ NAV AUTH ════════════════ */
-function initNavAuth() {
+async function initNavAuth() {
   const navUser     = document.getElementById('navUser');
   const navSignIn   = document.getElementById('navSignIn');
   const navAvatar   = document.getElementById('navAvatarCircle');
@@ -505,11 +520,12 @@ function initNavAuth() {
   const mobSection  = document.getElementById('mobUserSection');
   if (!navUser || !navSignIn) return;
   try {
-    firebase.auth().onAuthStateChanged(async user => {
+    const { auth, db, onAuthStateChanged, ref, get } = await waitForCD();
+    onAuthStateChanged(auth, async user => {
       if (user) {
         let username = user.displayName || 'user';
         try {
-          const snap = await firebase.database().ref('users/' + user.uid + '/username').once('value');
+          const snap = await get(ref(db, 'users/' + user.uid + '/username'));
           if (snap.exists() && snap.val()) username = snap.val();
         } catch(e) {}
         const initials = username.slice(0, 2).toUpperCase();
@@ -540,7 +556,7 @@ function initNavAuth() {
   } catch(e) { navSignIn.style.display = ''; }
 }
 async function doNavSignOut() {
-  try { await firebase.auth().signOut(); } catch(e) {}
+  try { const { auth, signOut } = await waitForCD(); await signOut(auth); } catch(e) {}
   location.reload();
 }
 
