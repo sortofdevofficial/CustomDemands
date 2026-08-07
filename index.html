@@ -3,64 +3,263 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Custom Demands — Order Anything</title>
+  <title>Custom Demands — Describe It. We Craft It.</title>
+  <meta name="description" content="Order anything custom-made — apparel, decor, gifts, portraits and more. Handcrafted by independent Indian artisans and shipped pan-India."/>
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="index.css"/>
 </head>
 <body>
 
-  <!-- POLICY NOTICE BAR -->
+  <!-- NOTICE RIBBON -->
   <div class="policy-bar" id="policyBar">
-    <span>✅ 100% Handcrafted &nbsp;·&nbsp; 📦 Ships Pan-India &nbsp;·&nbsp; 🚫 No Returns on Custom Orders</span>
-    <button class="policy-bar-close" onclick="document.getElementById('policyBar').style.display='none'">✕</button>
+    <span>Handcrafted to order &nbsp;·&nbsp; Ships pan-India &nbsp;·&nbsp; Custom pieces are made-to-order and final sale</span>
+    <button class="policy-bar-close" onclick="document.getElementById('policyBar').style.display='none'" aria-label="Dismiss notice">✕</button>
   </div>
 
   <!-- NAVIGATION -->
   <nav class="nav" id="mainNav">
     <a href="index.html" class="nav-logo">
+      <span class="mark">CD</span>
       <span>Custom<strong>Demands</strong></span>
     </a>
     <div class="nav-links">
-      <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener" class="nav-wa">WhatsApp Support</a>
+      <a href="#categories">What we make</a>
+      <a href="#process">How it works</a>
+      <a href="#gallery">Recent work</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Support</a>
     </div>
     <div class="nav-right">
       <!-- LOGGED IN USER -->
       <div class="nav-user" id="navUser" style="display:none; align-items:center; gap:12px;">
-        <img id="navAvatar" src="" alt="Avatar" style="width:36px; height:36px; border-radius:50%; border:1px solid #E5E7EB;">
-        <span class="nav-username-text" id="navUsernameText" style="font-weight:700;">@user</span>
-        <a href="auth.html?settings" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Settings</a>
+        <img id="navAvatar" src="" alt="Your avatar" style="width:34px; height:34px; border-radius:50%; border:1.5px solid var(--ink);">
+        <span class="nav-username-text" id="navUsernameText" style="font-weight:700; font-size:0.92rem;">@user</span>
+        <a href="auth.html?settings" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">Settings</a>
       </div>
       <!-- LOGGED OUT -->
       <a href="auth.html" class="nav-signin-btn btn-secondary" id="navSignIn">Sign In</a>
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <header class="hero">
     <div class="hero-content">
-      <div class="hero-badge">✦ The Ultimate Custom Shop</div>
-      <h1 class="hero-title">Bring your ideas<br/>to <span>reality.</span></h1>
-      <p class="hero-sub">Describe what you want. We craft it. No limits, no templates. Ships safely across India.</p>
-      
+      <div class="hero-eyebrow">Order No. 000001 and counting</div>
+      <h1 class="hero-title">Describe it.<br/>We <em>craft</em> it.</h1>
+      <p class="hero-sub">Whatever you're picturing — a hoodie, a portrait, a nameplate, a gift no one else has — tell us and our artisans build it from scratch. No catalogues, no templates.</p>
       <div class="hero-btns">
-        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg pulse">Create Custom Demand →</a>
+        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg">File Your Demand →</a>
+        <a href="#process" class="btn-secondary lg">See how it works</a>
+      </div>
+      <p class="hero-note">No account needed to order — sign in only if you want to track past demands.</p>
+    </div>
+    <div class="hero-ticket-wrap">
+      <div class="hero-ticket">
+        <div class="ticket-row"><span>Custom Demands</span><span>Workshop Docket</span></div>
+        <div class="ticket-field">
+          <label>Item</label>
+          <div class="val">Hand-embroidered denim jacket</div>
+        </div>
+        <div class="ticket-field">
+          <label>Requested by</label>
+          <div class="val">You, probably</div>
+        </div>
+        <hr class="ticket-divider"/>
+        <div class="ticket-field">
+          <label>Turnaround</label>
+          <div class="val">5–10 days</div>
+        </div>
+        <div class="ticket-field">
+          <label>Ships to</label>
+          <div class="val">Anywhere in India</div>
+        </div>
+        <div class="ticket-stamp">HAND<br/>MADE</div>
       </div>
     </div>
   </header>
 
-  <!-- ORDER INFO -->
+  <!-- CATEGORIES / LEDGER -->
+  <section class="section" id="categories">
+    <div class="sec-head">
+      <div class="sec-eyebrow">The ledger</div>
+      <h2 class="sec-title">If it can be <em>made</em>, we'll make it</h2>
+      <p class="sec-sub">Six kinds of demands we get most — but the list is really just a starting point.</p>
+    </div>
+    <div class="ledger">
+      <div class="ledger-row">
+        <span class="ledger-num">01</span>
+        <div class="ledger-main"><h3>Apparel & Streetwear</h3><p>Hoodies, denim, tees — hand-painted, embroidered or printed to your design.</p></div>
+        <span class="ledger-tag">Made to order</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">02</span>
+        <div class="ledger-main"><h3>Home & Decor</h3><p>Nameplates, wall art, macrame, resin pieces sized and shaped for your space.</p></div>
+        <span class="ledger-tag">Made to order</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">03</span>
+        <div class="ledger-main"><h3>Gifts & Keepsakes</h3><p>Portraits, engraved frames, personalised hampers for birthdays and anniversaries.</p></div>
+        <span class="ledger-tag">Popular</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">04</span>
+        <div class="ledger-main"><h3>Portraits & Art</h3><p>Digital or hand-painted portraits from your favourite photo, any size.</p></div>
+        <span class="ledger-tag">Made to order</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">05</span>
+        <div class="ledger-main"><h3>Accessories & Jewellery</h3><p>Bracelets, keychains, tags — small, personal, and quick to turn around.</p></div>
+        <span class="ledger-tag">Fast turnaround</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">06</span>
+        <div class="ledger-main"><h3>Corporate & Bulk Orders</h3><p>Branded merch and gifting for teams and events, priced per volume.</p></div>
+        <span class="ledger-tag">Bulk pricing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section bg-surface">
+    <div class="section" id="process" style="padding-top:0; padding-bottom:0;">
+      <div class="sec-head center">
+        <div class="sec-eyebrow">Four steps, one docket</div>
+        <h2 class="sec-title">How your demand gets made</h2>
+      </div>
+      <div class="process-grid">
+        <div class="stub">
+          <div class="stub-num">01 · File</div>
+          <h3>You describe it</h3>
+          <p>Open the order form and tell us what you want — reference photos help, but a good description works too.</p>
+        </div>
+        <div class="stub">
+          <div class="stub-num">02 · Confirm</div>
+          <h3>We quote on WhatsApp</h3>
+          <p>An artisan reviews your demand and sends a price and timeline. You confirm and pay via UPI or bank transfer.</p>
+        </div>
+        <div class="stub">
+          <div class="stub-num">03 · Craft</div>
+          <h3>It goes to the bench</h3>
+          <p>Your piece is made by hand, with progress photos sent on WhatsApp so you're never in the dark.</p>
+        </div>
+        <div class="stub">
+          <div class="stub-num">04 · Ship</div>
+          <h3>Packed and sent</h3>
+          <p>Finished pieces are packed with care and shipped anywhere in India, typically within 5–10 days.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="section" id="gallery">
+    <div class="sec-head">
+      <div class="sec-eyebrow">From the workshop</div>
+      <h2 class="sec-title">Recent demands, delivered</h2>
+      <p class="sec-sub">A few pieces our artisans have shipped recently. Photos above show real product categories — send us yours to see next.</p>
+    </div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#8B3A2E,#C9603F);">DENIM · HAND-PAINTED</div>
+        <div class="swatch-name">Embroidered denim jacket</div>
+        <div class="swatch-meta">Apparel · 7-day turnaround</div>
+      </div>
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#5C6459,#2F4A3C);">RESIN · NAMEPLATE</div>
+        <div class="swatch-name">Resin door nameplate</div>
+        <div class="swatch-meta">Home & Decor · 5-day turnaround</div>
+      </div>
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#93711F,#C9A257);">PORTRAIT · MUG SET</div>
+        <div class="swatch-name">Hand-painted portrait mugs</div>
+        <div class="swatch-meta">Gifts · 4-day turnaround</div>
+      </div>
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#1E2621,#4B564D);">FRAME · ENGRAVED</div>
+        <div class="swatch-name">Engraved wooden frame</div>
+        <div class="swatch-meta">Keepsakes · 6-day turnaround</div>
+      </div>
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#A8341F,#D97757);">MACRAME · WALL ART</div>
+        <div class="swatch-name">Macrame wall hanging</div>
+        <div class="swatch-meta">Home & Decor · 8-day turnaround</div>
+      </div>
+      <div class="swatch"><div class="swatch-tape"></div>
+        <div class="swatch-img" style="background:linear-gradient(145deg,#2F4A3C,#5C7A66);">MERCH · BULK</div>
+        <div class="swatch-name">Branded event tote bags</div>
+        <div class="swatch-meta">Corporate · Bulk order</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section bg-surface">
+    <div class="section" style="padding-top:0; padding-bottom:0;">
+      <div class="sec-head center">
+        <div class="sec-eyebrow">Notes from customers</div>
+        <h2 class="sec-title">What people say after unboxing</h2>
+      </div>
+      <div class="notes-grid">
+        <div class="note">
+          <p class="note-quote">"I sent a rough sketch and a paragraph of what I wanted. What came back was better than what I imagined."</p>
+          <p class="note-who"><strong>Ritika M.</strong><br/>Pune · Portrait commission</p>
+        </div>
+        <div class="note">
+          <p class="note-quote">"Progress photos on WhatsApp meant I never had to wonder what stage my order was at. Arrived well before the deadline I gave them."</p>
+          <p class="note-who"><strong>Aarav S.</strong><br/>Bengaluru · Anniversary gift</p>
+        </div>
+        <div class="note">
+          <p class="note-quote">"Ordered branded totes for a 40-person offsite. Pricing was clear upfront and everything shipped on one date."</p>
+          <p class="note-who"><strong>Neha T.</strong><br/>Gurugram · Corporate order</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Before you file a demand</div>
+      <h2 class="sec-title">Questions we get often</h2>
+    </div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q"><span>How long does an order take?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Most pieces are made and shipped within 5–10 days of confirming your quote. Complex or bulk orders may take longer — we'll tell you upfront.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Can I ask for changes before it ships?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Yes — you'll see progress photos before the piece is finished, and can request reasonable adjustments at that stage.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Why are custom orders final sale?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Because every piece is made specifically for you, we can't resell or restock it, so we don't accept returns once it ships. We do fix genuine defects or damage in transit.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>How do I pay?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>UPI or bank transfer, confirmed directly over WhatsApp once your quote is agreed. We never ask for payment before a quote is shared.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Do you ship across India?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Yes, pan-India shipping on every order, with tracking details sent as soon as your piece leaves the workshop.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER CTA -->
   <section class="section order-section" id="contact">
     <div class="order-box">
-      <h2>How it works</h2>
-      <p>Click below to open our official Order Form. Describe your custom requirements, size, and ideas. Our artists will handle the rest.</p>
-      <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg">Open Order Form</a>
-      <div class="order-features">
-        <span>✅ Safe UPI/Bank Transfer</span>
-        <span>📦 5-10 Days Delivery</span>
-        <span>💬 Updates via WhatsApp</span>
+      <div class="inner">
+        <h2>Ready to file your demand?</h2>
+        <p>Open the order form, describe what you're picturing, and an artisan will quote you on WhatsApp — usually within a day.</p>
+        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg">Open Order Form</a>
+        <div class="order-features">
+          <span>Safe UPI / bank transfer</span>
+          <span>5–10 day delivery</span>
+          <span>Updates via WhatsApp</span>
+        </div>
       </div>
     </div>
   </section>
@@ -68,8 +267,27 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-in">
-      <div class="footer-logo">Custom<strong>Demands</strong></div>
-      <p class="footer-copy">© 2026 Custom Demands India. All rights reserved.</p>
+      <div>
+        <div class="footer-logo">Custom<strong>Demands</strong></div>
+        <p class="footer-blurb">An Indian workshop for one-of-a-kind, made-to-order pieces — apparel, decor, gifts and more, crafted by hand and shipped pan-India.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="#categories">What we make</a>
+        <a href="#process">How it works</a>
+        <a href="#gallery">Recent work</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Get in touch</h4>
+        <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Support</a>
+        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank">Order Form</a>
+        <a href="auth.html">Your Account</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Custom Demands, India</span>
+      <span>Every order handcrafted — no two demands are identical</span>
     </div>
   </footer>
 

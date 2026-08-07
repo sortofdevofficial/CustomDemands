@@ -1,6 +1,6 @@
 import {
   auth, googleProvider, db, signInWithPopup, onAuthStateChanged, signOut,
-  ref, get, set, update, query, orderByChild, equalTo, limitToFirst
+  doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs
 } from './firebase.js';
 
 const IS_SETTINGS = new URLSearchParams(window.location.search).has('settings');
@@ -26,8 +26,8 @@ function validateU(u) {
 }
 
 async function getUserData(uid) {
-  const snap = await get(ref(db, 'users/' + uid));
-  return snap.exists() ? snap.val() : null;
+  const snap = await getDoc(doc(db, 'users', uid));
+  return snap.exists() ? snap.data() : null;
 }
 
 onAuthStateChanged(auth, async user => {
@@ -36,7 +36,7 @@ onAuthStateChanged(auth, async user => {
     let data = await getUserData(user.uid);
     if (!data) {
       const nd = { uid: user.uid, email: user.email || '', displayName: user.displayName || '', photoURL: user.photoURL || '', username: '', phone: '', address: '', createdAt: Date.now() };
-      await set(ref(db, 'users/' + user.uid), nd);
+      await setDoc(doc(db, 'users', user.uid), nd);
       data = nd;
     }
     const hasUN = data.username && data.username.length >= 3;
@@ -52,7 +52,7 @@ onAuthStateChanged(auth, async user => {
       showOnly('screenAlready');
     }
   } catch (err) {
-    console.error('DB Error:', err);
+    console.error('Firestore Error:', err);
     if (user && !IS_SETTINGS) showOnly('screenAlready');
     else showOnly('screenSignIn');
   }
@@ -75,7 +75,6 @@ if ($('btnSignOut')) $('btnSignOut').addEventListener('click', doSignOut);
 
 $('btnSaveUsername').addEventListener('click', saveNewUsername);
 
-// Save Initial Username (Enforces uniqueness)
 async function saveNewUsername() {
   const user = auth.currentUser; if (!user) return;
   const val = $('unInput').value.trim().toLowerCase();
@@ -88,15 +87,15 @@ async function saveNewUsername() {
   $('btnSaveUsername').textContent = 'Checking availability…';
   
   try {
-    const q = query(ref(db, 'users'), orderByChild('username'), equalTo(val), limitToFirst(1));
-    const snap = await get(q);
-    if (snap.exists()) {
+    const q = query(collection(db, 'users'), where('username', '==', val));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
       $('unError').textContent = 'Username taken — try another.';
       $('btnSaveUsername').disabled = false;
       $('btnSaveUsername').textContent = 'Save & Continue';
       return;
     }
-    await update(ref(db, 'users/' + user.uid), { username: val, updatedAt: Date.now() });
+    await updateDoc(doc(db, 'users', user.uid), { username: val, updatedAt: Date.now() });
     $('redirOverlay').classList.add('show');
     window.location.replace('index.html');
   } catch (err) {
@@ -106,7 +105,6 @@ async function saveNewUsername() {
   }
 }
 
-// Populate Settings
 function fillSettings(user, data) {
   const u = data.username || user.displayName || 'user';
   $('spAvatar').src = avatarURL(user);
@@ -122,7 +120,6 @@ function fillSettings(user, data) {
 
 $('btnSaveSettings').addEventListener('click', saveSettings);
 
-// Save User Profile Settings (Checks username uniqueness before saving)
 async function saveSettings() {
   const user = auth.currentUser; if (!user) return;
   const newUsername = $('settingsUsername').value.trim().toLowerCase();
@@ -140,11 +137,10 @@ async function saveSettings() {
     const data = await getUserData(user.uid);
     const cur = data ? data.username : '';
     
-    // Only check uniqueness if they are changing their username
     if (newUsername !== cur) {
-      const q = query(ref(db, 'users'), orderByChild('username'), equalTo(newUsername), limitToFirst(1));
-      const snap = await get(q);
-      if (snap.exists()) {
+      const q = query(collection(db, 'users'), where('username', '==', newUsername));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
         $('sError').textContent = 'Username already taken by someone else.';
         $('btnSaveSettings').disabled = false;
         $('btnSaveSettings').textContent = 'Save All Details';
@@ -152,8 +148,7 @@ async function saveSettings() {
       }
     }
     
-    // Save to Database
-    await update(ref(db, 'users/' + user.uid), { 
+    await updateDoc(doc(db, 'users', user.uid), { 
       username: newUsername,
       phone: newPhone,
       address: newAddress,
