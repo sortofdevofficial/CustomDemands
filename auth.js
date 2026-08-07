@@ -62,8 +62,9 @@ $('btnGoogle').addEventListener('click', async () => {
   $('signInError').textContent = '';
   $('btnGoogle').disabled = true;
   $('btnGoogle').textContent = 'Connecting…';
-  try { await signInWithPopup(auth, googleProvider); }
-  catch (err) {
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (err) {
     $('btnGoogle').disabled = false;
     $('btnGoogle').innerHTML = 'Continue with Google';
     $('signInError').textContent = 'Sign-in failed. Try again.';
@@ -73,7 +74,7 @@ $('btnGoogle').addEventListener('click', async () => {
 if ($('btnAlreadySignOut')) $('btnAlreadySignOut').addEventListener('click', doSignOut);
 if ($('btnSignOut')) $('btnSignOut').addEventListener('click', doSignOut);
 
-$('btnSaveUsername').addEventListener('click', saveNewUsername);
+if ($('btnSaveUsername')) $('btnSaveUsername').addEventListener('click', saveNewUsername);
 
 async function saveNewUsername() {
   const user = auth.currentUser; if (!user) return;
@@ -100,7 +101,7 @@ async function saveNewUsername() {
     window.location.replace('index.html');
   } catch (err) {
     console.error(err);
-    $('unError').textContent = 'Could not save. Please try again.';
+    $('unError').textContent = 'Could not save. Please check database permissions.';
     $('btnSaveUsername').disabled = false;
   }
 }
@@ -118,7 +119,7 @@ function fillSettings(user, data) {
   $('sError').textContent = ''; $('sSuccess').textContent = '';
 }
 
-$('btnSaveSettings').addEventListener('click', saveSettings);
+if ($('btnSaveSettings')) $('btnSaveSettings').addEventListener('click', saveSettings);
 
 async function saveSettings() {
   const user = auth.currentUser; if (!user) return;
