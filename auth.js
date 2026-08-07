@@ -1,18 +1,6 @@
 import {
-  auth,
-  googleProvider,
-  db,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut,
-  ref,
-  get,
-  set,
-  update,
-  query,
-  orderByChild,
-  equalTo,
-  limitToFirst
+  auth, googleProvider, db, signInWithPopup, onAuthStateChanged, signOut,
+  ref, get, set, update, query, orderByChild, equalTo, limitToFirst
 } from './firebase.js';
 
 const IS_SETTINGS = new URLSearchParams(window.location.search).has('settings');
@@ -27,11 +15,11 @@ function showOnly(id) {
 }
 
 function avatarURL(user) {
-  return user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'U')}&background=F3F4F6&color=111827&size=100&bold=true`;
+  return user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'U')}&background=000&color=fff&size=100`;
 }
 
 function validateU(u) {
-  if (!u || u.length < 3) return 'At least 3 characters required.';
+  if (!u || u.length < 3) return 'Username requires at least 3 characters.';
   if (u.length > 24) return '24 characters maximum.';
   if (!/^[a-zA-Z0-9_]+$/.test(u)) return 'Only letters, numbers, and underscores.';
   return null;
@@ -47,7 +35,7 @@ onAuthStateChanged(auth, async user => {
   try {
     let data = await getUserData(user.uid);
     if (!data) {
-      const nd = { uid: user.uid, email: user.email || '', displayName: user.displayName || '', photoURL: user.photoURL || '', username: '', createdAt: Date.now() };
+      const nd = { uid: user.uid, email: user.email || '', displayName: user.displayName || '', photoURL: user.photoURL || '', username: '', phone: '', address: '', createdAt: Date.now() };
       await set(ref(db, 'users/' + user.uid), nd);
       data = nd;
     }
@@ -65,13 +53,8 @@ onAuthStateChanged(auth, async user => {
     }
   } catch (err) {
     console.error('DB Error:', err);
-    if (IS_SETTINGS) { fillSettingsFallback(user); showOnly('screenSettings'); }
-    else if (user) {
-      $('alreadyAvatar').src = avatarURL(user);
-      $('alreadyTitle').textContent = 'Hey, ' + (user.displayName || 'there');
-      $('alreadyEmail').textContent = user.email || '';
-      showOnly('screenAlready');
-    } else { showOnly('screenSignIn'); }
+    if (user && !IS_SETTINGS) showOnly('screenAlready');
+    else showOnly('screenSignIn');
   }
 });
 
@@ -91,8 +74,8 @@ if ($('btnAlreadySignOut')) $('btnAlreadySignOut').addEventListener('click', doS
 if ($('btnSignOut')) $('btnSignOut').addEventListener('click', doSignOut);
 
 $('btnSaveUsername').addEventListener('click', saveNewUsername);
-$('unInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveNewUsername(); });
 
+// Save Initial Username (Enforces uniqueness)
 async function saveNewUsername() {
   const user = auth.currentUser; if (!user) return;
   const val = $('unInput').value.trim().toLowerCase();
@@ -102,7 +85,7 @@ async function saveNewUsername() {
   
   $('unError').textContent = '';
   $('btnSaveUsername').disabled = true;
-  $('btnSaveUsername').textContent = 'Saving…';
+  $('btnSaveUsername').textContent = 'Checking availability…';
   
   try {
     const q = query(ref(db, 'users'), orderByChild('username'), equalTo(val), limitToFirst(1));
@@ -120,60 +103,72 @@ async function saveNewUsername() {
     console.error(err);
     $('unError').textContent = 'Could not save. Please try again.';
     $('btnSaveUsername').disabled = false;
-    $('btnSaveUsername').textContent = 'Save & Continue';
   }
 }
 
+// Populate Settings
 function fillSettings(user, data) {
   const u = data.username || user.displayName || 'user';
   $('spAvatar').src = avatarURL(user);
   $('spUsername').textContent = '@' + u;
   $('spEmail').textContent = user.email || '';
+  
   $('settingsUsername').value = u;
+  $('settingsPhone').value = data.phone || '';
+  $('settingsAddress').value = data.address || '';
+  
   $('sError').textContent = ''; $('sSuccess').textContent = '';
 }
 
-function fillSettingsFallback(user) {
-  fillSettings(user, { username: user.displayName || 'user', createdAt: null });
-}
-
 $('btnSaveSettings').addEventListener('click', saveSettings);
-$('settingsUsername').addEventListener('keydown', e => { if (e.key === 'Enter') saveSettings(); });
 
+// Save User Profile Settings (Checks username uniqueness before saving)
 async function saveSettings() {
   const user = auth.currentUser; if (!user) return;
-  const val = $('settingsUsername').value.trim().toLowerCase();
-  const ve = validateU(val);
+  const newUsername = $('settingsUsername').value.trim().toLowerCase();
+  const newPhone = $('settingsPhone').value.trim();
+  const newAddress = $('settingsAddress').value.trim();
+  const ve = validateU(newUsername);
   
   $('sError').textContent = ''; $('sSuccess').textContent = '';
   if (ve) { $('sError').textContent = ve; return; }
   
   $('btnSaveSettings').disabled = true;
-  $('btnSaveSettings').textContent = 'Saving…';
+  $('btnSaveSettings').textContent = 'Saving details…';
   
   try {
     const data = await getUserData(user.uid);
     const cur = data ? data.username : '';
-    if (val !== cur) {
-      const q = query(ref(db, 'users'), orderByChild('username'), equalTo(val), limitToFirst(1));
+    
+    // Only check uniqueness if they are changing their username
+    if (newUsername !== cur) {
+      const q = query(ref(db, 'users'), orderByChild('username'), equalTo(newUsername), limitToFirst(1));
       const snap = await get(q);
       if (snap.exists()) {
-        $('sError').textContent = 'Username taken — try another.';
+        $('sError').textContent = 'Username already taken by someone else.';
         $('btnSaveSettings').disabled = false;
-        $('btnSaveSettings').textContent = 'Save Changes';
+        $('btnSaveSettings').textContent = 'Save All Details';
         return;
       }
     }
-    await update(ref(db, 'users/' + user.uid), { username: val, updatedAt: Date.now() });
-    $('spUsername').textContent = '@' + val;
-    $('sSuccess').textContent = '✓ Saved successfully!';
+    
+    // Save to Database
+    await update(ref(db, 'users/' + user.uid), { 
+      username: newUsername,
+      phone: newPhone,
+      address: newAddress,
+      updatedAt: Date.now() 
+    });
+    
+    $('spUsername').textContent = '@' + newUsername;
+    $('sSuccess').textContent = '✓ Details saved successfully!';
     setTimeout(() => { $('sSuccess').textContent = ''; }, 3000);
   } catch (err) {
     console.error(err);
     $('sError').textContent = 'Could not save. Please try again.';
   } finally {
     $('btnSaveSettings').disabled = false;
-    $('btnSaveSettings').textContent = 'Save Changes';
+    $('btnSaveSettings').textContent = 'Save All Details';
   }
 }
 

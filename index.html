@@ -3,18 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Custom Demands — Buy Custom Stickers & Posters</title>
-  <meta name="description" content="India's #1 custom die-cut sticker & poster shop. Order personalised anime stickers, kawaii stickers, and more."/>
-  
+  <title>Custom Demands — Order Anything</title>
   <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <!-- Upgraded to Plus Jakarta Sans for a premium, modern tech aesthetic -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  
   <link rel="stylesheet" href="index.css"/>
-  <script src="data/stickers.js"></script>
-  <script src="data/posters.js"></script>
 </head>
 <body>
 
@@ -30,104 +24,39 @@
       <span>Custom<strong>Demands</strong></span>
     </a>
     <div class="nav-links">
-      <a href="#stickers">Stickers</a>
-      <a href="#posters">Posters</a>
-      <a href="#artstyles">Art Styles</a>
-      <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener" class="nav-wa">WhatsApp</a>
+      <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener" class="nav-wa">WhatsApp Support</a>
     </div>
     <div class="nav-right">
-      <div class="nav-user" id="navUser" style="display:none">
-        <span class="nav-username-text" id="navUsernameText">@user</span>
-        <a href="auth.html?settings" class="nav-icon-btn">⚙️</a>
-        <button class="nav-icon-btn" id="navLogout">🚪</button>
+      <!-- LOGGED IN USER -->
+      <div class="nav-user" id="navUser" style="display:none; align-items:center; gap:12px;">
+        <img id="navAvatar" src="" alt="Avatar" style="width:36px; height:36px; border-radius:50%; border:1px solid #E5E7EB;">
+        <span class="nav-username-text" id="navUsernameText" style="font-weight:700;">@user</span>
+        <a href="auth.html?settings" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Settings</a>
       </div>
-      <a href="auth.html" class="nav-signin-btn" id="navSignIn" style="display:none">Sign In</a>
-      <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary">Order Now</a>
+      <!-- LOGGED OUT -->
+      <a href="auth.html" class="nav-signin-btn btn-secondary" id="navSignIn">Sign In</a>
     </div>
   </nav>
 
   <!-- HERO SECTION -->
   <header class="hero">
     <div class="hero-content">
-      <div class="hero-badge">✦ India's Premium Custom Shop</div>
+      <div class="hero-badge">✦ The Ultimate Custom Shop</div>
       <h1 class="hero-title">Bring your ideas<br/>to <span>reality.</span></h1>
-      <p class="hero-sub">100% custom die-cut stickers & wall posters. Anime, Kawaii, Harry Potter, Marvel, or your own imagination. No templates. Ships across India.</p>
+      <p class="hero-sub">Describe what you want. We craft it. No limits, no templates. Ships safely across India.</p>
       
       <div class="hero-btns">
-        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg">Create Custom Demand</a>
-        <a href="#stickers" class="btn-secondary lg">Explore Collection</a>
+        <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg pulse">Create Custom Demand →</a>
       </div>
     </div>
   </header>
 
-  <!-- STICKERS SECTION -->
-  <section class="section" id="stickers">
-    <div class="sec-head">
-      <h2 class="sec-title">Custom <span>Stickers</span></h2>
-      <p class="sec-sub">Waterproof vinyl die-cut stickers. Starts at ₹10.</p>
-    </div>
-
-    <div class="filter-pills" id="filterPills">
-      <button class="fpill active" data-filter="all">All</button>
-      <button class="fpill" data-filter="anime">⚡ Anime</button>
-      <button class="fpill" data-filter="kawaii">🌸 Kawaii</button>
-      <button class="fpill" data-filter="marvel">🦸 Marvel</button>
-      <button class="fpill" data-filter="harrypotter">🧙 Harry Potter</button>
-      <button class="fpill" data-filter="chibi">🥰 Chibi</button>
-    </div>
-    
-    <div class="cards-grid" id="stickerGrid"></div>
-  </section>
-
-  <!-- POSTERS SECTION -->
-  <section class="section bg-soft" id="posters">
-    <div class="sec-head">
-      <h2 class="sec-title">Wall <span>Posters</span></h2>
-      <p class="sec-sub">Premium glossy wall posters in A4, A3 & A2. Starts at ₹49.</p>
-    </div>
-
-    <div class="filter-pills" id="posterFilterPills">
-      <button class="fpill active" data-postfilter="all">All</button>
-      <button class="fpill" data-postfilter="anime">⚡ Anime</button>
-      <button class="fpill" data-postfilter="marvel">🦸 Marvel</button>
-      <button class="fpill" data-postfilter="kawaii">🌸 Kawaii</button>
-    </div>
-    
-    <div class="cards-grid" id="posterGrid"></div>
-  </section>
-
-  <!-- ART STYLES -->
-  <section class="section" id="artstyles">
-    <div class="sec-head">
-      <h2 class="sec-title">Endless <span>Styles</span></h2>
-      <p class="sec-sub">Mix and match any style for your ultimate custom demand.</p>
-    </div>
-    <div class="styles-grid">
-      <div class="style-card">
-        <h3>🌸 Kawaii</h3>
-        <p>Pastel palettes, big eyes, soft shapes.</p>
-      </div>
-      <div class="style-card">
-        <h3>⚡ Anime</h3>
-        <p>Dynamic lines, bold shading, any fandom.</p>
-      </div>
-      <div class="style-card">
-        <h3>🥰 Chibi</h3>
-        <p>Super-deformed, maximum cuteness.</p>
-      </div>
-      <div class="style-card">
-        <h3>🦸 Marvel</h3>
-        <p>Action poses, MCU themes, bold colours.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ORDER / CONTACT SECTION -->
+  <!-- ORDER INFO -->
   <section class="section order-section" id="contact">
     <div class="order-box">
-      <h2>Ready to order?</h2>
-      <p>Click below to open our official Google Order Form. Fill in your requirements and we'll start crafting immediately.</p>
-      <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg pulse">Proceed to Order Form →</a>
+      <h2>How it works</h2>
+      <p>Click below to open our official Order Form. Describe your custom requirements, size, and ideas. Our artists will handle the rest.</p>
+      <a href="https://forms.gle/F4xaUFUTsSJaR2EcA" target="_blank" class="btn-primary lg">Open Order Form</a>
       <div class="order-features">
         <span>✅ Safe UPI/Bank Transfer</span>
         <span>📦 5-10 Days Delivery</span>
@@ -140,23 +69,10 @@
   <footer class="footer">
     <div class="footer-in">
       <div class="footer-logo">Custom<strong>Demands</strong></div>
-      <div class="footer-links">
-        <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank">WhatsApp Community</a>
-        <a href="auth.html">My Account</a>
-      </div>
       <p class="footer-copy">© 2026 Custom Demands India. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script>
-    (function(){
-      const cfg={apiKey:"AIzaSyDuVgf-2jF10A8XQR7RZY7s9Ero8Y4KrII",authDomain:"custom-demands.firebaseapp.com",projectId:"custom-demands",storageBucket:"custom-demands.firebasestorage.app",messagingSenderId:"885129813571",appId:"1:885129813571:web:0891ca8dee84b80bdb3ef6",databaseURL:"https://custom-demands-default-rtdb.firebaseio.com"};
-      if(!firebase.apps.length) firebase.initializeApp(cfg);
-    })();
-  </script>
   <script type="module" src="index.js"></script>
 </body>
 </html>
