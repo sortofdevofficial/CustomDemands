@@ -16,7 +16,9 @@ import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  onSnapshot,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -53,5 +55,7 @@ export {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  onSnapshot,
+  serverTimestamp
 };
