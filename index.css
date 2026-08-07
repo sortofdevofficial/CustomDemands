@@ -1,32 +1,25 @@
 /* =====================================================================
    CUSTOM DEMANDS — THE ORDER DOCKET
-   A workshop-ticket visual language: every custom order is a slip
-   filled out, stamped, and sent to the bench.
    ===================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* -- Paper & ink -- */
-  --paper:        #ECE6D6;   /* kraft/manila body */
+  --paper:        #ECE6D6;   
   --paper-dark:   #DFD5B8;
-  --surface:      #FFFDF7;   /* card / ticket white */
-  --ink:          #1E2621;   /* near-black, green-cast */
+  --surface:      #FFFDF7;   
+  --ink:          #1E2621;   
   --ink-muted:    #5C6459;
   --ink-faint:    #8B8D7C;
   --border:       #C7BC9C;
   --border-dark:  #A99C79;
-
-  /* -- Stamp & tag accents -- */
-  --stamp:        #A8341F;   /* rubber-stamp brick red */
+  --stamp:        #A8341F;   
   --stamp-dark:   #832819;
-  --brass:        #93711F;   /* brass tag / thread gold */
-  --thread:       #2F4A3C;   /* workshop green (spools/stitching) */
-
+  --brass:        #93711F;   
+  --thread:       #2F4A3C;   
   --radius-sm: 6px;
   --radius: 10px;
   --shadow-ticket: 0 14px 30px -12px rgba(30, 38, 33, 0.28);
-
   --font-display: 'Bricolage Grotesque', sans-serif;
   --font-body: 'IBM Plex Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
@@ -46,59 +39,17 @@ body {
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
 :focus-visible { outline: 2px solid var(--thread); outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
-}
 
-/* ---------------------------------------------------------------
-   Notice ribbon
-   --------------------------------------------------------------- */
+/* Notice ribbon */
 .policy-bar {
   background: var(--ink); color: var(--paper);
   font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500;
-  letter-spacing: 0.02em;
-  text-align: center; padding: 9px 5%;
+  letter-spacing: 0.02em; text-align: center; padding: 9px 5%;
   position: relative; z-index: 1000;
 }
 .policy-bar span { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.policy-bar-close {
-  position: absolute; right: 20px; top: 50%;
-  transform: translateY(-50%); background: none;
-  border: none; color: var(--paper); cursor: pointer; font-size: 1rem;
-  width: 24px; height: 24px; opacity: 0.7;
-}
-.policy-bar-close:hover { opacity: 1; }
 
-/* ---------------------------------------------------------------
-   Nav
-   --------------------------------------------------------------- */
-.nav {
-  position: sticky; top: 0; z-index: 999;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 5%;
-  background: rgba(236, 230, 214, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-logo {
-  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
-  letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;
-}
-.nav-logo .mark {
-  width: 26px; height: 26px; border: 1.5px solid var(--ink); border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 0.7rem; transform: rotate(-8deg);
-  flex-shrink: 0;
-}
-.nav-logo strong { color: var(--stamp); font-weight: 700; }
-.nav-links { display: flex; align-items: center; gap: 28px; font-weight: 600; font-size: 0.92rem; }
-.nav-links a { position: relative; padding-bottom: 2px; }
-.nav-links a:not(.btn-secondary):hover { color: var(--stamp); }
-.nav-right { display: flex; align-items: center; gap: 16px; }
-
-/* ---------------------------------------------------------------
-   Buttons
-   --------------------------------------------------------------- */
+/* Buttons */
 .btn-primary {
   background: var(--stamp); color: var(--surface);
   padding: 11px 22px; border-radius: 99px;
@@ -108,29 +59,13 @@ img { max-width: 100%; display: block; }
 }
 .btn-primary:hover { background: var(--stamp-dark); transform: translateY(-2px); box-shadow: 0 8px 18px -6px rgba(168,52,31,0.45); }
 .btn-primary.lg { padding: 15px 30px; font-size: 1.02rem; }
-.btn-secondary {
-  background: var(--surface); color: var(--ink);
-  padding: 10px 20px; border-radius: 99px;
-  font-weight: 700; font-size: 0.92rem;
-  border: 1px solid var(--border-dark); transition: all 0.15s;
-}
-.btn-secondary:hover { border-color: var(--ink); background: var(--surface); }
-.btn-secondary.lg { padding: 14px 28px; font-size: 1.02rem; }
 
-/* ---------------------------------------------------------------
-   Hero — the docket
-   --------------------------------------------------------------- */
+/* Hero */
 .hero {
   padding: 76px 5% 60px;
   display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center;
   max-width: 1220px; margin: 0 auto;
 }
-.hero-eyebrow {
-  font-family: var(--font-mono); font-size: 0.8rem; color: var(--brass);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
-}
-.hero-eyebrow::before { content: ''; width: 26px; height: 1px; background: var(--brass); }
 .hero-title {
   font-family: var(--font-display); font-size: 3.6rem; font-weight: 700;
   line-height: 1.04; letter-spacing: -1.5px; margin-bottom: 22px;
@@ -138,17 +73,14 @@ img { max-width: 100%; display: block; }
 .hero-title em { font-style: normal; color: var(--stamp); }
 .hero-sub { font-size: 1.12rem; color: var(--ink-muted); max-width: 480px; margin-bottom: 32px; }
 .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-.hero-note { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-faint); margin-top: 18px; }
 
-/* the ticket illustration */
+/* Ticket */
 .hero-ticket-wrap { display: flex; justify-content: center; }
 .hero-ticket {
   position: relative; width: 100%; max-width: 340px;
   background: var(--surface); border: 1.5px solid var(--ink);
-  border-radius: var(--radius);
-  padding: 26px 24px 22px;
-  box-shadow: var(--shadow-ticket);
-  transform: rotate(-3deg);
+  border-radius: var(--radius); padding: 26px 24px 22px;
+  box-shadow: var(--shadow-ticket); transform: rotate(-3deg);
   font-family: var(--font-mono);
 }
 .hero-ticket::before, .hero-ticket::after {
@@ -158,26 +90,13 @@ img { max-width: 100%; display: block; }
 }
 .hero-ticket::before { left: -12px; }
 .hero-ticket::after { right: -12px; }
-.ticket-row { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
 .ticket-divider { border: none; border-top: 1.5px dashed var(--border-dark); margin: 16px 0; }
 .ticket-field { margin-bottom: 14px; }
 .ticket-field label { display: block; font-size: 0.66rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
 .ticket-field .val { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; color: var(--ink); }
-.ticket-stamp {
-  position: absolute; bottom: 18px; right: 18px;
-  border: 2px solid var(--thread); color: var(--thread);
-  border-radius: 50%; width: 78px; height: 78px;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em;
-  transform: rotate(-14deg); opacity: 0.85;
-}
 
-/* ---------------------------------------------------------------
-   Sections
-   --------------------------------------------------------------- */
+/* Sections */
 .section { padding: 88px 5%; max-width: 1220px; margin: 0 auto; }
-.bg-surface { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.bg-surface > .section { margin: 0 auto; }
 .sec-head { margin-bottom: 48px; max-width: 640px; }
 .sec-head.center { margin-inline: auto; text-align: center; }
 .sec-eyebrow { font-family: var(--font-mono); font-size: 0.78rem; color: var(--brass); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
@@ -185,9 +104,7 @@ img { max-width: 100%; display: block; }
 .sec-title em { font-style: normal; color: var(--stamp); }
 .sec-sub { color: var(--ink-muted); font-size: 1.05rem; margin-top: 10px; }
 
-/* ---------------------------------------------------------------
-   Category ledger
-   --------------------------------------------------------------- */
+/* Ledger */
 .ledger { border-top: 1.5px solid var(--ink); }
 .ledger-row {
   display: grid; grid-template-columns: 60px 1fr auto; gap: 20px; align-items: center;
@@ -204,139 +121,15 @@ img { max-width: 100%; display: block; }
   white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em;
 }
 
-/* ---------------------------------------------------------------
-   Process — docket stubs (genuine sequence, numbering earned)
-   --------------------------------------------------------------- */
-.process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-.stub {
-  background: var(--surface); border: 1px solid var(--border-dark); border-radius: var(--radius);
-  padding: 26px 22px; position: relative;
-}
-.stub::after {
-  content: ''; position: absolute; top: -1px; bottom: -1px; right: -11px; width: 22px;
-  background:
-    radial-gradient(circle 6px at 11px 14px, var(--paper) 6px, transparent 6.5px),
-    radial-gradient(circle 6px at 11px 42px, var(--paper) 6px, transparent 6.5px),
-    radial-gradient(circle 6px at 11px 70px, var(--paper) 6px, transparent 6.5px),
-    radial-gradient(circle 6px at 11px 98px, var(--paper) 6px, transparent 6.5px);
-  display: none;
-}
-.stub-num { font-family: var(--font-mono); color: var(--stamp); font-weight: 600; font-size: 0.85rem; margin-bottom: 14px; }
-.stub h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin-bottom: 8px; }
-.stub p { color: var(--ink-muted); font-size: 0.9rem; }
-
-/* ---------------------------------------------------------------
-   Gallery — pinned swatches
-   --------------------------------------------------------------- */
-.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 26px; }
-.swatch {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 14px 14px 18px;
-  box-shadow: 0 8px 18px -10px rgba(30,38,33,0.18);
-  position: relative;
-}
-.swatch:nth-child(odd) { transform: rotate(-1.4deg); }
-.swatch:nth-child(even) { transform: rotate(1.2deg); }
-.swatch-tape {
-  position: absolute; top: -10px; left: 50%; transform: translateX(-50%) rotate(-2deg);
-  width: 54px; height: 20px; background: rgba(147,113,31,0.35);
-  border: 1px solid rgba(147,113,31,0.4);
-}
-.swatch-img {
-  aspect-ratio: 4/5; border-radius: 4px; margin-bottom: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 0.7rem; color: rgba(255,255,255,0.75);
-  text-transform: uppercase; letter-spacing: 0.05em;
-}
-.swatch-name { font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
-.swatch-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint); margin-top: 3px; }
-
-/* ---------------------------------------------------------------
-   Testimonials — customer notes
-   --------------------------------------------------------------- */
-.notes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.note {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 24px;
-  border-left: 3px solid var(--brass);
-}
-.note-quote { font-size: 1rem; color: var(--ink); margin-bottom: 16px; }
-.note-who { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-muted); }
-.note-who strong { color: var(--ink); font-family: var(--font-body); font-weight: 700; }
-
-/* ---------------------------------------------------------------
-   FAQ
-   --------------------------------------------------------------- */
-.faq-list { border-top: 1px solid var(--border); max-width: 760px; }
-.faq-item { border-bottom: 1px solid var(--border); }
-.faq-q {
-  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
-  padding: 20px 4px; display: flex; justify-content: space-between; align-items: center; gap: 20px;
-  font-family: var(--font-body); font-weight: 700; font-size: 1rem; color: var(--ink);
-}
-.faq-q .plus { font-family: var(--font-mono); color: var(--stamp); font-size: 1.1rem; transition: transform 0.2s; flex-shrink: 0; }
-.faq-item.open .faq-q .plus { transform: rotate(45deg); }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-.faq-item.open .faq-a { max-height: 200px; }
-.faq-a p { padding: 0 4px 20px; color: var(--ink-muted); font-size: 0.95rem; max-width: 620px; }
-
-/* ---------------------------------------------------------------
-   Order CTA — the big stamp
-   --------------------------------------------------------------- */
-.order-section { display: flex; justify-content: center; }
-.order-box {
-  background: var(--ink); border-radius: var(--radius); padding: 64px 40px;
-  text-align: center; color: var(--paper); max-width: 780px; width: 100%; position: relative; overflow: hidden;
-}
-.order-box::before {
-  content: 'CUSTOM DEMANDS'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 6rem; font-weight: 800; color: rgba(255,255,255,0.03);
-  white-space: nowrap; pointer-events: none;
-}
-.order-box .inner { position: relative; }
-.order-box h2 { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; margin-bottom: 14px; letter-spacing: -0.8px; }
-.order-box p { color: #C9C4B4; font-size: 1.05rem; margin-bottom: 30px; max-width: 480px; margin-inline: auto; }
-.order-box .btn-primary { background: var(--stamp); color: var(--surface); font-size: 1.05rem; padding: 16px 32px; }
-.order-box .btn-primary:hover { background: #C24127; }
-.order-features {
-  margin-top: 34px; display: flex; justify-content: center; gap: 26px; flex-wrap: wrap;
-  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; color: #9C9788;
-}
-
-/* ---------------------------------------------------------------
-   Footer
-   --------------------------------------------------------------- */
-.footer { background: var(--paper-dark); border-top: 1px solid var(--border-dark); padding: 50px 5% 30px; }
-.footer-in { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
-.footer-logo { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
-.footer-logo strong { color: var(--stamp); }
-.footer-blurb { color: var(--ink-muted); font-size: 0.9rem; max-width: 280px; }
-.footer-col h4 { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); margin-bottom: 14px; }
-.footer-col a, .footer-col p { display: block; color: var(--ink-muted); font-size: 0.9rem; margin-bottom: 10px; }
-.footer-col a:hover { color: var(--stamp); }
-.footer-bottom {
-  max-width: 1220px; margin: 40px auto 0; padding-top: 24px; border-top: 1px solid var(--border-dark);
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-  font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-faint);
-}
-
-/* ---------------------------------------------------------------
-   Responsive
-   --------------------------------------------------------------- */
+/* Responsive */
 @media (max-width: 980px) {
   .hero { grid-template-columns: 1fr; text-align: center; padding-top: 48px; }
-  .hero-eyebrow { justify-content: center; }
   .hero-btns { justify-content: center; }
   .hero-sub { margin-inline: auto; }
-  .hero-ticket { transform: rotate(0); }
-  .process-grid { grid-template-columns: 1fr 1fr; }
-  .notes-grid { grid-template-columns: 1fr; }
-  .footer-in { grid-template-columns: 1fr; }
+  .hero-ticket { transform: rotate(0); margin: 0 auto; }
 }
 @media (max-width: 640px) {
-  .nav-links { display: none; }
   .hero-title { font-size: 2.5rem; }
-  .process-grid { grid-template-columns: 1fr; }
   .ledger-row { grid-template-columns: 40px 1fr; }
   .ledger-tag { grid-column: 2; justify-self: start; }
 }
