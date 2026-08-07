@@ -1,22 +1,19 @@
-/* ================================
-   CUSTOM DEMANDS — auth.js
-   ================================ */
-const firebaseConfig = {
-  apiKey: "AIzaSyDuVgf-2jF10A8XQR7RZY7s9Ero8Y4KrII",
-  authDomain: "custom-demands.firebaseapp.com",
-  projectId: "custom-demands",
-  storageBucket: "custom-demands.firebasestorage.app",
-  messagingSenderId: "885129813571",
-  appId: "1:885129813571:web:0891ca8dee84b80bdb3ef6",
-  measurementId: "G-PDWSS8WQEL",
-  databaseURL: "https://custom-demands-default-rtdb.firebaseio.com"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({ prompt: 'select_account' });
+import {
+  auth,
+  googleProvider,
+  db,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut,
+  ref,
+  get,
+  set,
+  update,
+  query,
+  orderByChild,
+  equalTo,
+  limitToFirst
+} from './firebase.js';
 
 const IS_SETTINGS = new URLSearchParams(window.location.search).has('settings');
 const $ = id => document.getElementById(id);
@@ -40,19 +37,18 @@ function validateU(u) {
   return null;
 }
 
-function userRef(uid) { return db.ref('users/' + uid); }
 async function getUserData(uid) {
-  const snap = await userRef(uid).once('value');
+  const snap = await get(ref(db, 'users/' + uid));
   return snap.exists() ? snap.val() : null;
 }
 
-auth.onAuthStateChanged(async user => {
+onAuthStateChanged(auth, async user => {
   if (!user) { showOnly('screenSignIn'); return; }
   try {
     let data = await getUserData(user.uid);
     if (!data) {
       const nd = { uid: user.uid, email: user.email || '', displayName: user.displayName || '', photoURL: user.photoURL || '', username: '', createdAt: Date.now() };
-      await userRef(user.uid).set(nd);
+      await set(ref(db, 'users/' + user.uid), nd);
       data = nd;
     }
     const hasUN = data.username && data.username.length >= 3;
@@ -83,7 +79,7 @@ $('btnGoogle').addEventListener('click', async () => {
   $('signInError').textContent = '';
   $('btnGoogle').disabled = true;
   $('btnGoogle').textContent = 'Connecting…';
-  try { await auth.signInWithPopup(provider); }
+  try { await signInWithPopup(auth, googleProvider); }
   catch (err) {
     $('btnGoogle').disabled = false;
     $('btnGoogle').innerHTML = 'Continue with Google';
@@ -109,14 +105,15 @@ async function saveNewUsername() {
   $('btnSaveUsername').textContent = 'Saving…';
   
   try {
-    const snap = await db.ref('users').orderByChild('username').equalTo(val).limitToFirst(1).once('value');
+    const q = query(ref(db, 'users'), orderByChild('username'), equalTo(val), limitToFirst(1));
+    const snap = await get(q);
     if (snap.exists()) {
       $('unError').textContent = 'Username taken — try another.';
       $('btnSaveUsername').disabled = false;
       $('btnSaveUsername').textContent = 'Save & Continue';
       return;
     }
-    await userRef(user.uid).update({ username: val, updatedAt: Date.now() });
+    await update(ref(db, 'users/' + user.uid), { username: val, updatedAt: Date.now() });
     $('redirOverlay').classList.add('show');
     window.location.replace('index.html');
   } catch (err) {
@@ -158,7 +155,8 @@ async function saveSettings() {
     const data = await getUserData(user.uid);
     const cur = data ? data.username : '';
     if (val !== cur) {
-      const snap = await db.ref('users').orderByChild('username').equalTo(val).limitToFirst(1).once('value');
+      const q = query(ref(db, 'users'), orderByChild('username'), equalTo(val), limitToFirst(1));
+      const snap = await get(q);
       if (snap.exists()) {
         $('sError').textContent = 'Username taken — try another.';
         $('btnSaveSettings').disabled = false;
@@ -166,7 +164,7 @@ async function saveSettings() {
         return;
       }
     }
-    await userRef(user.uid).update({ username: val, updatedAt: Date.now() });
+    await update(ref(db, 'users/' + user.uid), { username: val, updatedAt: Date.now() });
     $('spUsername').textContent = '@' + val;
     $('sSuccess').textContent = '✓ Saved successfully!';
     setTimeout(() => { $('sSuccess').textContent = ''; }, 3000);
@@ -181,6 +179,6 @@ async function saveSettings() {
 
 async function doSignOut() {
   $('redirOverlay').classList.add('show');
-  try { await auth.signOut(); window.location.replace('auth.html'); }
+  try { await signOut(auth); window.location.replace('auth.html'); }
   catch (e) { $('redirOverlay').classList.remove('show'); }
 }
