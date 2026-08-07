@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Custom Stickers</title>
+  <title>Custom Stickers — Workshop</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -13,20 +14,47 @@
     <span>Custom Stickers (₹10) &nbsp;·&nbsp; Delivery (₹10) &nbsp;·&nbsp; Delivering ONLY to New Delhi, Rajapuri, and Om Vihar</span>
   </div>
 
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="#" class="nav-logo">
+      <span class="mark">CS</span>
+      Custom<strong>Stickers</strong>
+    </a>
+    <div class="nav-links">
+      <a href="#categories">Catalog</a>
+      <a href="#myOrdersSection">My Orders</a>
+      <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank">WhatsApp Channel</a>
+    </div>
+    <div class="nav-right">
+      <button id="navSignIn" class="btn-primary" style="display:none;">Sign In</button>
+      <div id="navUser" style="display:none; align-items:center; gap:10px;">
+        <img id="navAvatar" src="" alt="Avatar" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+        <span id="navUsernameText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600;"></span>
+      </div>
+    </div>
+  </nav>
+
   <!-- Hero Section -->
   <header class="hero">
     <div class="hero-content">
+      <div class="hero-eyebrow">Workshop Docket #2026</div>
       <h1 class="hero-title">You describe it.<br/>We <em>print</em> it.</h1>
       <p class="hero-sub">We are currently exclusively selling custom stickers for ₹10! Delivery is a flat ₹10, available only in New Delhi, Rajapuri, and Om Vihar.</p>
       
       <div class="hero-btns">
         <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg">Order Your Stickers →</a>
+        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" class="btn-secondary lg">Join WhatsApp Channel</a>
       </div>
+      <div class="hero-note">⚡ Total Orders System Wide: <strong id="totalOrdersCount" style="color:var(--stamp);">Loading...</strong></div>
     </div>
     
     <!-- Fake Receipt Ticket -->
     <div class="hero-ticket-wrap">
       <div class="hero-ticket">
+        <div class="ticket-row">
+          <span>Docket Slip</span>
+          <span>Verified</span>
+        </div>
         <div class="ticket-field">
           <label>Item</label>
           <div class="val">Custom Sticker (₹10)</div>
@@ -44,6 +72,7 @@
           <label>Ships to</label>
           <div class="val">New Delhi, Rajapuri, Om Vihar</div>
         </div>
+        <div class="ticket-stamp">APPROVED</div>
       </div>
     </div>
   </header>
@@ -61,10 +90,22 @@
         <span class="ledger-num">01</span>
         <div class="ledger-main">
           <h3>Custom Die-Cut Stickers</h3>
-          <p>Any design you want. Just ₹10 per sticker + ₹10 delivery.</p>
+          <p>Any design you want. Just ₹10 per sticker + ₹10 delivery fee.</p>
         </div>
         <span class="ledger-tag">Available Now</span>
       </div>
+    </div>
+  </section>
+
+  <!-- User Orders Section (Auto-populated from DB via UID) -->
+  <section class="section bg-surface" id="myOrdersSection">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Account Ledger</div>
+      <h2 class="sec-title">Your <em>Orders</em></h2>
+      <p class="sec-sub">Track active stickers and custom sticker dockets tied to your profile account UID.</p>
+    </div>
+    <div id="userOrdersContainer" style="font-family:var(--font-mono); font-size:0.9rem; color:var(--ink-muted);">
+      <p>Please sign in to view your live order history.</p>
     </div>
   </section>
 
@@ -74,10 +115,34 @@
       <div class="sec-eyebrow">Ready to order?</div>
       <h2 class="sec-title">Tell us what to <em>print</em></h2>
       <br>
-      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg" style="margin: 0 auto; display: inline-block;">Open Order Form →</a>
+      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg" style="margin: 0 auto; display: inline-block;">Open Google Order Form →</a>
     </div>
   </section>
 
-  <script src="index.js"></script>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-in">
+      <div>
+        <div class="footer-logo">Custom<strong>Stickers</strong></div>
+        <p class="footer-blurb">Printing custom high-grade stickers at scale for local neighborhoods.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank">WhatsApp Channel</a>
+        <a href="#categories">Catalog Overview</a>
+      </div>
+      <div class="footer-col">
+        <h4>Zones</h4>
+        <p>New Delhi</p>
+        <p>Rajapuri & Om Vihar</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Custom Stickers Workshop.</span>
+      <span>Flat ₹10 Delivery Protocol Active.</span>
+    </div>
+  </footer>
+
+  <script type="module" src="index.js"></script>
 </body>
 </html>
