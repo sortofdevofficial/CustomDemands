@@ -1,198 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Custom Demands — Describe It. We Craft It.</title>
-  <meta name="description" content="Order anything custom-made — apparel, decor, gifts, portraits and more. Handcrafted by independent Indian artisans and shipped pan-India."/>
-  <link rel="icon" type="image/png" href="favicon.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link rel="stylesheet" href="index.css"/>
-  <link rel="stylesheet" href="auth.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Stickers</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- NOTICE RIBBON -->
+  <!-- Notice Ribbon -->
   <div class="policy-bar" id="policyBar">
-    <span>Handcrafted to order &nbsp;·&nbsp; Ships pan-India &nbsp;·&nbsp; Custom pieces are made-to-order and final sale</span>
-    <button class="policy-bar-close" onclick="document.getElementById('policyBar').style.display='none'" aria-label="Dismiss notice">✕</button>
+    <span>Custom Stickers (₹10) &nbsp;·&nbsp; Delivery (₹10) &nbsp;·&nbsp; Delivering ONLY to New Delhi, Rajapuri, and Om Vihar</span>
   </div>
 
-  <!-- NAVIGATION -->
-  <nav class="nav" id="mainNav">
-    <a href="index.html" class="nav-logo">
-      <span class="mark">CD</span>
-      <span>Custom<strong>Demands</strong></span>
-    </a>
-    <div class="nav-links">
-      <a href="#categories">What we make</a>
-      <a href="#process">How it works</a>
-      <a href="#gallery">Recent work</a>
-      <a href="#faq">FAQ</a>
-      <a href="https://whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Support</a>
-    </div>
-    <div class="nav-right">
-      <div class="nav-user" id="navUser" style="display:none; align-items:center; gap:12px;">
-        <img id="navAvatar" src="" alt="Your avatar" style="width:34px; height:34px; border-radius:50%; border:1.5px solid var(--ink);">
-        <span class="nav-username-text" id="navUsernameText" style="font-weight:700; font-size:0.92rem;">@user</span>
-        <a href="auth.html?settings" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">Settings</a>
-      </div>
-      <a href="auth.html" class="nav-signin-btn btn-secondary" id="navSignIn">Sign In</a>
-    </div>
-  </nav>
-
-  <!-- HERO -->
+  <!-- Hero Section -->
   <header class="hero">
     <div class="hero-content">
-      <div class="hero-eyebrow">Order No. 000001 and counting</div>
-      <h1 class="hero-title">Describe it.<br/>We <em>craft</em> it.</h1>
-      <p class="hero-sub">Whatever you're picturing — a hoodie, a portrait, a nameplate, a gift no one else has — tell us and our artisans build it from scratch.</p>
+      <h1 class="hero-title">You describe it.<br/>We <em>print</em> it.</h1>
+      <p class="hero-sub">We are currently exclusively selling custom stickers for ₹10! Delivery is a flat ₹10, available only in New Delhi, Rajapuri, and Om Vihar.</p>
+      
       <div class="hero-btns">
-        <a href="#demandForm" class="btn-primary lg">File Your Demand →</a>
-        <a href="#process" class="btn-secondary lg">See how it works</a>
+        <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg">Order Your Stickers →</a>
       </div>
-      <p class="hero-note">No account needed to order — sign in only if you want to track past demands.</p>
     </div>
-    <div class="hero-ticket-wrap">
-      <div class="hero-ticket">
-        <div class="ticket-row"><span>Custom Demands</span><span>Workshop Docket</span></div>
-        <div class="ticket-field">
-          <label>Item</label>
-          <div class="val">Hand-embroidered denim jacket</div>
-        </div>
-        <div class="ticket-field">
-          <label>Requested by</label>
-          <div class="val">You, probably</div>
-        </div>
-        <hr class="ticket-divider"/>
-        <div class="ticket-field">
-          <label>Turnaround</label>
-          <div class="val">5–10 days</div>
-        </div>
-        <div class="ticket-field">
-          <label>Ships to</label>
-          <div class="val">Anywhere in India</div>
-        </div>
-        <div class="ticket-stamp">HAND<br/>MADE</div>
+    
+    <!-- Fake Receipt Ticket -->
+    <div class="hero-visual">
+      <div class="ticket-field">
+        <label>Item</label>
+        <div class="val">Custom Sticker (₹10)</div>
+      </div>
+      <div class="ticket-field">
+        <label>Requested by</label>
+        <div class="val">You, probably</div>
+      </div>
+      <hr class="ticket-divider"/>
+      <div class="ticket-field">
+        <label>Delivery Charge</label>
+        <div class="val">₹10</div>
+      </div>
+      <div class="ticket-field">
+        <label>Ships to</label>
+        <div class="val">New Delhi, Rajapuri, Om Vihar</div>
       </div>
     </div>
   </header>
 
-  <!-- CATEGORIES -->
+  <!-- Categories -->
   <section class="section" id="categories">
     <div class="sec-head">
-      <div class="sec-eyebrow">The ledger</div>
-      <h2 class="sec-title">If it can be <em>made</em>, we'll make it</h2>
-      <p class="sec-sub">Six kinds of demands we get most — but the list is really just a starting point.</p>
+      <div class="sec-eyebrow">Our Catalog</div>
+      <h2 class="sec-title">Custom Stickers</h2>
+      <p class="sec-sub">Right now, we are 100% focused on delivering high-quality custom stickers.</p>
     </div>
+    
     <div class="ledger">
-      <div class="ledger-row"><span class="ledger-num">01</span><div class="ledger-main"><h3>Apparel & Streetwear</h3><p>Hoodies, denim, tees — hand-painted, embroidered or printed to your design.</p></div><span class="ledger-tag">Made to order</span></div>
-      <div class="ledger-row"><span class="ledger-num">02</span><div class="ledger-main"><h3>Home & Decor</h3><p>Nameplates, wall art, macrame, resin pieces sized and shaped for your space.</p></div><span class="ledger-tag">Made to order</span></div>
-      <div class="ledger-row"><span class="ledger-num">03</span><div class="ledger-main"><h3>Gifts & Keepsakes</h3><p>Portraits, engraved frames, personalised hampers for birthdays and anniversaries.</p></div><span class="ledger-tag">Popular</span></div>
-      <div class="ledger-row"><span class="ledger-num">04</span><div class="ledger-main"><h3>Portraits & Art</h3><p>Digital or hand-painted portraits from your favourite photo, any size.</p></div><span class="ledger-tag">Made to order</span></div>
-      <div class="ledger-row"><span class="ledger-num">05</span><div class="ledger-main"><h3>Accessories & Jewellery</h3><p>Bracelets, keychains, tags — small, personal, and quick to turn around.</p></div><span class="ledger-tag">Fast turnaround</span></div>
-      <div class="ledger-row"><span class="ledger-num">06</span><div class="ledger-main"><h3>Corporate & Bulk Orders</h3><p>Branded merch and gifting for teams and events, priced per volume.</p></div><span class="ledger-tag">Bulk pricing</span></div>
-    </div>
-  </section>
-
-  <!-- PROCESS -->
-  <section class="section bg-surface">
-    <div class="section" id="process" style="padding-top:0; padding-bottom:0;">
-      <div class="sec-head center">
-        <div class="sec-eyebrow">Four steps, one docket</div>
-        <h2 class="sec-title">How your demand gets made</h2>
-      </div>
-      <div class="process-grid">
-        <div class="stub"><div class="stub-num">01 · File</div><h3>You describe it</h3><p>Fill out the live order form below with reference details or ideas.</p></div>
-        <div class="stub"><div class="stub-num">02 · Confirm</div><h3>We quote on WhatsApp</h3><p>An artisan reviews your demand and sends price details via WhatsApp.</p></div>
-        <div class="stub"><div class="stub-num">03 · Craft</div><h3>It goes to the bench</h3><p>Your piece is made by hand with progress updates sent to you.</p></div>
-        <div class="stub"><div class="stub-num">04 · Ship</div><h3>Packed and sent</h3><p>Packed carefully and shipped anywhere in India within 5–10 days.</p></div>
+      <div class="ledger-row">
+        <span class="ledger-num">01</span>
+        <div class="ledger-main">
+          <h3>Custom Die-Cut Stickers</h3>
+          <p>Any design you want. Just ₹10 per sticker + ₹10 delivery.</p>
+        </div>
+        <span class="ledger-tag">Available Now</span>
       </div>
     </div>
   </section>
 
-  <!-- LIVE DEMAND FORM SECTION -->
+  <!-- Google Form CTA -->
   <section class="section" id="demandForm">
     <div class="sec-head center">
-      <div class="sec-eyebrow">File Your Demand Live</div>
-      <h2 class="sec-title">Tell us what to <em>craft</em></h2>
-    </div>
-    <div class="acard wide" style="margin: 0 auto; max-width: 600px;">
-      <form id="liveOrderForm">
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Category</label>
-        <div class="afield">
-          <div class="ainput-wrap">
-            <select id="dfCategory" class="ainput" style="padding-left:16px;" required>
-              <option value="Apparel & Streetwear">Apparel & Streetwear</option>
-              <option value="Home & Decor">Home & Decor</option>
-              <option value="Gifts & Keepsakes">Gifts & Keepsakes</option>
-              <option value="Portraits & Art">Portraits & Art</option>
-              <option value="Accessories & Jewellery">Accessories & Jewellery</option>
-              <option value="Corporate & Bulk">Corporate & Bulk Orders</option>
-            </select>
-          </div>
-        </div>
-
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Describe Your Demand</label>
-        <div class="afield">
-          <div class="ainput-wrap" style="height:auto;">
-            <textarea id="dfDetails" class="ainput" placeholder="Specify materials, sizes, colors, text, or reference links..." rows="4" style="padding-left:16px; resize:vertical;" required></textarea>
-          </div>
-        </div>
-
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">WhatsApp / Mobile Number</label>
-        <div class="afield">
-          <div class="ainput-wrap">
-            <input id="dfPhone" type="tel" class="ainput" placeholder="+91 00000 00000" maxlength="15" style="padding-left:16px;" required/>
-          </div>
-        </div>
-
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Delivery Address</label>
-        <div class="afield">
-          <div class="ainput-wrap" style="height:auto;">
-            <textarea id="dfAddress" class="ainput" placeholder="Full delivery address with pincode" rows="2" style="padding-left:16px; resize:vertical;" required></textarea>
-          </div>
-        </div>
-
-        <p class="aerr" id="dfError"></p>
-        <p class="aok" id="dfSuccess"></p>
-        <button type="submit" class="btn-full" id="btnSubmitDemand">Submit Demand Docket</button>
-      </form>
+      <div class="sec-eyebrow">Ready to order?</div>
+      <h2 class="sec-title">Tell us what to <em>print</em></h2>
+      <br>
+      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg" style="margin: 0 auto; display: inline-block;">Open Order Form →</a>
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="section" id="faq">
-    <div class="sec-head">
-      <div class="sec-eyebrow">Before you file a demand</div>
-      <h2 class="sec-title">Questions we get often</h2>
-    </div>
-    <div class="faq-list" id="faqList">
-      <div class="faq-item">
-        <button class="faq-q"><span>How long does an order take?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>Most pieces are made and shipped within 5–10 days of confirming your quote.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q"><span>How do I pay?</span><span class="plus">+</span></button>
-        <div class="faq-a"><p>UPI or bank transfer, confirmed directly over WhatsApp once your quote is agreed.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-in">
-      <div>
-        <div class="footer-logo">Custom<strong>Demands</strong></div>
-        <p class="footer-blurb">An Indian workshop for one-of-a-kind, made-to-order pieces.</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Custom Demands, India</span>
-    </div>
-  </footer>
-
-  <script type="module" src="index.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>
