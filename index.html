@@ -29,6 +29,7 @@
     <div class="nav-links" id="navLinks">
       <a href="#categories">Catalog</a>
       <a href="#myOrdersSection">My Orders</a>
+      <a href="#reviewsSection">Reviews</a>
       <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
     </div>
     <div class="nav-right">
@@ -103,7 +104,7 @@
     </div>
   </section>
 
-  <!-- User Orders Section (Auto-populated from DB via UID) -->
+  <!-- User Orders Section -->
   <section class="section bg-surface" id="myOrdersSection">
     <div class="sec-head">
       <div class="sec-eyebrow">Account Ledger</div>
@@ -115,8 +116,46 @@
     </div>
   </section>
 
+  <!-- Public Reviews Section -->
+  <section class="section" id="reviewsSection">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Community Feedback</div>
+      <h2 class="sec-title">Customer <em>Reviews</em></h2>
+      <p class="sec-sub">See what people are printing and leave your own review.</p>
+    </div>
+
+    <div class="order-card" style="max-width: 600px; margin: 0 auto 40px;">
+      <h3 style="font-family: var(--font-display); margin-bottom: 16px;">Leave a Review</h3>
+      <form id="reviewForm" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-family: var(--font-mono); font-size: 0.8rem; display: block; margin-bottom: 4px;">Rating</label>
+          <select id="reviewRating" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-dark);" required>
+            <option value="5">★★★★★ (5/5)</option>
+            <option value="4">★★★★☆ (4/5)</option>
+            <option value="3">★★★☆☆ (3/5)</option>
+            <option value="2">★★☆☆☆ (2/5)</option>
+            <option value="1">★☆☆☆☆ (1/5)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-family: var(--font-mono); font-size: 0.8rem; display: block; margin-bottom: 4px;">Your Feedback</label>
+          <textarea id="reviewComment" rows="3" placeholder="How did your stickers turn out?" style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-dark); font-family: var(--font-body);" required></textarea>
+        </div>
+        <div>
+          <label style="font-family: var(--font-mono); font-size: 0.8rem; display: block; margin-bottom: 4px;">Upload Photo (Optional)</label>
+          <input type="file" id="reviewImageInput" accept="image/*" style="font-size: 0.85rem;" />
+        </div>
+        <button type="submit" id="submitReviewBtn" class="btn-primary" style="justify-content: center;">Post Review</button>
+      </form>
+    </div>
+
+    <div id="reviewsContainer" class="orders-grid">
+      <p style="color:var(--ink-faint); text-align:center; grid-column: 1/-1;">Loading reviews…</p>
+    </div>
+  </section>
+
   <!-- Google Form CTA -->
-  <section class="section" id="demandForm">
+  <section class="section bg-surface" id="demandForm">
     <div class="sec-head center">
       <div class="sec-eyebrow">Ready to order?</div>
       <h2 class="sec-title">Tell us what to <em>print</em></h2>

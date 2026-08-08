@@ -25,6 +25,7 @@ function extractImageUrl(raw) {
 }
 
 function renderOrderCard(d) {
+  // Grabs whatever exact text is in the 'Order Status' or 'Status' column
   const rawStatus = (d["Order Status"] || d["Status"] || 'Pending').toString();
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
   const imgUrl = extractImageUrl(d["Upload Design"] || d["Upload Image"] || null);
@@ -60,20 +61,18 @@ async function fetchLiveOrdersFromSheet(user) {
 
   if (!user) {
     if (ordersContainer) ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
-    setTotalOrders('error'); // Hides count if not logged in
+    setTotalOrders('error');
     return;
   }
 
   let orders = [];
   try {
-    // Append email to the API URL securely
     const fetchUrl = `${GOOGLE_SHEET_API_URL}?email=${encodeURIComponent(user.email)}`;
     const response = await fetch(fetchUrl, { cache: 'no-store' });
     
     if (!response.ok) throw new Error(`Sheet responded with ${response.status}`);
     const result = await response.json();
     
-    // Support the new structure { data: [], totalSystemOrders: number }
     if (result.data) {
         orders = result.data;
         setTotalOrders('ok', result.totalSystemOrders);
@@ -99,6 +98,107 @@ async function fetchLiveOrdersFromSheet(user) {
   ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
 }
 
+// ---- REVIEW SYSTEM ADDITIONS ----
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fetchPublicReviews() {
+  const container = $('reviewsContainer');
+  if (!container) return;
+
+  try {
+    const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getReviews`);
+    const reviews = await res.json();
+
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+      container.innerHTML = `<p style="color:var(--ink-faint); text-align:center; grid-column: 1/-1;">No reviews yet. Be the first to leave one!</p>`;
+      return;
+    }
+
+    container.innerHTML = reviews.map(r => `
+      <div class="order-card">
+        <div class="order-header">
+          <strong>${r.username || 'Anonymous'}</strong>
+          <span style="color:var(--brass); font-family:var(--font-mono);">${'★'.repeat(r.rating || 5)}</span>
+        </div>
+        ${r.imageUrl ? `
+          <div class="order-img-wrap">
+            <img src="${r.imageUrl}" class="order-img" loading="lazy" alt="Review photo" />
+          </div>` : ''}
+        <div class="order-body">
+          <p>${r.comment || ''}</p>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Error fetching reviews:', err);
+    container.innerHTML = `<p style="color:var(--stamp); text-align:center; grid-column: 1/-1;">Failed to load reviews.</p>`;
+  }
+}
+
+const reviewForm = $('reviewForm');
+if (reviewForm) {
+  reviewForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('submitReviewBtn');
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
+
+    try {
+      const fileInput = $('reviewImageInput');
+      let base64Data = null;
+      let fileName = null;
+      let fileType = null;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        base64Data = await fileToBase64(file);
+        fileName = `review_${Date.now()}_${file.name}`;
+        fileType = file.type;
+      }
+
+      const payload = {
+        action: "addReview",
+        username: currentUser ? (currentUser.displayName || 'Member') : 'Anonymous',
+        rating: $('reviewRating').value,
+        comment: $('reviewComment').value,
+        base64Data: base64Data,
+        fileName: fileName,
+        fileType: fileType
+      };
+
+      const res = await fetch(GOOGLE_SHEET_API_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      const result = await res.json();
+      if (result.status === 'success') {
+        alert('Review posted successfully!');
+        reviewForm.reset();
+        fetchPublicReviews();
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (err) {
+      console.error('Failed to submit review:', err);
+      alert('Failed to post review. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Post Review';
+    }
+  });
+}
+
+// ---- AUTH & INIT ----
+
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
@@ -121,6 +221,7 @@ onAuthStateChanged(auth, async user => {
 });
 
 setInterval(() => fetchLiveOrdersFromSheet(currentUser), 60000);
+fetchPublicReviews(); // Load reviews on startup
 
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
