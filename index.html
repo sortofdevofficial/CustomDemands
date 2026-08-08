@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Stickers — Workshop</title>
+  <meta name="description" content="Custom die-cut stickers, ₹10 each, with ₹10 flat delivery to New Delhi, Rajapuri, and Om Vihar. Order in minutes, track it live."/>
   <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -20,15 +23,18 @@
       <span class="mark">CS</span>
       Custom<strong>Stickers</strong>
     </a>
-    <div class="nav-links">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="#categories">Catalog</a>
       <a href="#myOrdersSection">My Orders</a>
-      <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank">WhatsApp Channel</a>
+      <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
     </div>
     <div class="nav-right">
       <button id="navSignIn" class="btn-primary" style="display:none;">Sign In</button>
       <div id="navUser" style="display:none; align-items:center; gap:10px;">
-        <img id="navAvatar" src="" alt="Avatar" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+        <img id="navAvatar" src="" alt="Your profile picture" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
         <span id="navUsernameText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600;"></span>
       </div>
     </div>
@@ -40,15 +46,15 @@
       <div class="hero-eyebrow">Workshop Docket #2026</div>
       <h1 class="hero-title">You describe it.<br/>We <em>print</em> it.</h1>
       <p class="hero-sub">We are currently exclusively selling custom stickers for ₹10! Delivery is a flat ₹10, available only in New Delhi, Rajapuri, and Om Vihar.</p>
-      
+
       <div class="hero-btns">
-        <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg">Order Your Stickers →</a>
-        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" class="btn-secondary lg">Join WhatsApp Channel</a>
+        <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" rel="noopener" class="btn-primary lg">Order Your Stickers →</a>
+        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener" class="btn-secondary lg">Join WhatsApp Channel</a>
       </div>
-      <div class="hero-note">⚡ Total Orders System Wide: <strong id="totalOrdersCount" style="color:var(--stamp);">Loading...</strong></div>
+      <div class="hero-note">⚡ Total Orders System Wide: <strong id="totalOrdersCount" class="is-loading">Loading…</strong></div>
     </div>
-    
-    <!-- Fake Receipt Ticket -->
+
+    <!-- Docket ticket -->
     <div class="hero-ticket-wrap">
       <div class="hero-ticket">
         <div class="ticket-row">
@@ -84,7 +90,7 @@
       <h2 class="sec-title">Custom Stickers</h2>
       <p class="sec-sub">Right now, we are 100% focused on delivering high-quality custom stickers.</p>
     </div>
-    
+
     <div class="ledger">
       <div class="ledger-row">
         <span class="ledger-num">01</span>
@@ -115,7 +121,7 @@
       <div class="sec-eyebrow">Ready to order?</div>
       <h2 class="sec-title">Tell us what to <em>print</em></h2>
       <br>
-      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" class="btn-primary lg" style="margin: 0 auto; display: inline-block;">Open Google Order Form →</a>
+      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" rel="noopener" class="btn-primary lg" style="margin: 0 auto; display: inline-block;">Open Google Order Form →</a>
     </div>
   </section>
 
@@ -128,7 +134,7 @@
       </div>
       <div class="footer-col">
         <h4>Community</h4>
-        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank">WhatsApp Channel</a>
+        <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
         <a href="#categories">Catalog Overview</a>
       </div>
       <div class="footer-col">

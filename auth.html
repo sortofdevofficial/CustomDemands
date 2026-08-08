@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Account — Custom Demands</title>
+  <title>Account — Custom Stickers</title>
+  <meta name="description" content="Sign in to Custom Stickers to track your orders and manage your delivery details."/>
   <link rel="icon" type="image/png" href="favicon.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link rel="stylesheet" href="auth.css"/>
 </head>
 <body>
-  
+
   <nav class="anav">
-    <a href="index.html" class="anav-logo">Custom<strong>Demands</strong></a>
+    <a href="index.html" class="anav-logo">Custom<strong>Stickers</strong></a>
     <a href="index.html" class="anav-back">← Back to site</a>
   </nav>
 
@@ -38,7 +40,7 @@
     <section class="ascreen" id="screenAlready" style="display:none">
       <div class="acard text-center">
         <div class="already-wrap">
-          <img src="" alt="" id="alreadyAvatar" class="already-avatar"/>
+          <img src="" alt="Your profile picture" id="alreadyAvatar" class="already-avatar"/>
         </div>
         <h1 class="ahead" id="alreadyTitle">Hey, @user</h1>
         <p class="asub" id="alreadyEmail">email</p>
@@ -70,16 +72,16 @@
     <section class="ascreen wide" id="screenSettings" style="display:none">
       <div class="acard wide">
         <div class="sprofile">
-          <img src="" alt="" id="spAvatar" class="sprofile-img"/>
+          <img src="" alt="Your profile picture" id="spAvatar" class="sprofile-img"/>
           <div>
             <div class="sprofile-un" id="spUsername">@username</div>
             <div class="sprofile-email" id="spEmail">email</div>
           </div>
         </div>
-        
+
         <h2 class="spanel-title">Personal Details</h2>
-        
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Username</label>
+
+        <label for="settingsUsername" style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Username</label>
         <div class="afield">
           <div class="ainput-wrap">
             <span class="ainput-pre">@</span>
@@ -87,14 +89,14 @@
           </div>
         </div>
 
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Phone Number</label>
+        <label for="settingsPhone" style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Phone Number</label>
         <div class="afield">
           <div class="ainput-wrap">
             <input id="settingsPhone" type="text" class="ainput" placeholder="+91 00000 00000" maxlength="15" style="padding-left:16px;"/>
           </div>
         </div>
 
-        <label style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Shipping Address</label>
+        <label for="settingsAddress" style="font-weight:700; font-size:0.9rem; display:block; margin-bottom:5px;">Shipping Address</label>
         <div class="afield">
           <div class="ainput-wrap" style="height:auto;">
             <textarea id="settingsAddress" class="ainput" placeholder="Full house address, city, state, pincode" rows="3" style="padding-left:16px; resize:vertical;"></textarea>
