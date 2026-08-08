@@ -3,13 +3,6 @@ import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
 const $ = id => document.getElementById(id);
 const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwObDIl7NRo2UBHw1mLcz7EGhP8pKw6vUz9noX6BzQoJG47FKTM5D2uy2oi-sfKtg2d/exec";
 
-// SECURITY NOTE: this endpoint currently returns every order row (including
-// every customer's email address) to any visitor, and filtering happens here
-// in the browser. That means anyone can open dev tools → Network and read
-// everybody's orders. Ideally the Apps Script itself should accept an
-// ?email= parameter and only return that person's rows server-side. Until
-// that's changed, treat this feed as effectively public.
-
 let currentUser = null;
 
 function setTotalOrders(state, count) {
@@ -18,7 +11,7 @@ function setTotalOrders(state, count) {
   el.classList.remove('is-loading', 'is-error');
   if (state === 'loading') { el.textContent = 'Loading…'; el.classList.add('is-loading'); }
   else if (state === 'error') { el.textContent = 'Unavailable'; el.classList.add('is-error'); }
-  else { el.textContent = `${count} Active Docket${count === 1 ? '' : 's'}`; }
+  else { el.textContent = `${count}`; }
 }
 
 function extractImageUrl(raw) {
@@ -65,14 +58,28 @@ async function fetchLiveOrdersFromSheet(user) {
   const ordersContainer = $('userOrdersContainer');
   setTotalOrders('loading');
 
-  let orders;
+  if (!user) {
+    if (ordersContainer) ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
+    setTotalOrders('error'); // Hides count if not logged in
+    return;
+  }
+
+  let orders = [];
   try {
-    const response = await fetch(GOOGLE_SHEET_API_URL, { cache: 'no-store' });
+    // Append email to the API URL securely
+    const fetchUrl = `${GOOGLE_SHEET_API_URL}?email=${encodeURIComponent(user.email)}`;
+    const response = await fetch(fetchUrl, { cache: 'no-store' });
+    
     if (!response.ok) throw new Error(`Sheet responded with ${response.status}`);
-    const data = await response.json();
-    // Apps Script sometimes returns {error: "..."} instead of an array on failure.
-    if (!Array.isArray(data)) throw new Error('Unexpected response shape from order sheet');
-    orders = data;
+    const result = await response.json();
+    
+    // Support the new structure { data: [], totalSystemOrders: number }
+    if (result.data) {
+        orders = result.data;
+        setTotalOrders('ok', result.totalSystemOrders);
+    } else {
+        throw new Error('Unexpected response shape from order sheet');
+    }
   } catch (err) {
     console.error("Error fetching sheet data:", err);
     setTotalOrders('error');
@@ -82,24 +89,14 @@ async function fetchLiveOrdersFromSheet(user) {
     return;
   }
 
-  setTotalOrders('ok', orders.length);
   if (!ordersContainer) return;
 
-  if (!user) {
-    ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
-    return;
-  }
-
-  const userOrders = orders.filter(order =>
-    order["Email address"] && order["Email address"].toLowerCase() === user.email.toLowerCase()
-  );
-
-  if (userOrders.length === 0) {
+  if (orders.length === 0) {
     ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong> yet. Place one through the order form above.</p>`;
     return;
   }
 
-  ordersContainer.innerHTML = `<div class="orders-grid">${userOrders.map(renderOrderCard).join('')}</div>`;
+  ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
 }
 
 onAuthStateChanged(auth, async user => {
@@ -123,11 +120,8 @@ onAuthStateChanged(auth, async user => {
   fetchLiveOrdersFromSheet(user);
 });
 
-// Refresh the live feed periodically so the count/status stay current
-// without needing a page reload.
 setInterval(() => fetchLiveOrdersFromSheet(currentUser), 60000);
 
-// Mobile nav toggle
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
 if (navToggle && navLinks) {
