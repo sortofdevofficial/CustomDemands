@@ -11,7 +11,6 @@ async function fetchLiveOrdersFromSheet(user) {
     const response = await fetch(GOOGLE_SHEET_API_URL);
     const orders = await response.json();
 
-    // 1. Live Total Count
     if (countDisplay) {
       countDisplay.textContent = `${orders.length} Active Dockets`;
     }
@@ -19,7 +18,6 @@ async function fetchLiveOrdersFromSheet(user) {
     if (!ordersContainer) return;
 
     if (user) {
-      // 2. FIX: Match by Google Form 'Email address', NOT 'uid'
       const userOrders = orders.filter(order => 
         order["Email address"] && order["Email address"].toLowerCase() === user.email.toLowerCase()
       );
@@ -29,12 +27,33 @@ async function fetchLiveOrdersFromSheet(user) {
       } else {
         let html = '<div class="orders-grid">';
         userOrders.forEach(d => {
+          
+          const rawStatus = d["Order Status"] || d["Status"] || 'Pending';
+          const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
+
+          // Target exactly "Upload Design" for the image link
+          let imgUrl = d["Upload Design"] || null;
+          
+          if (imgUrl && imgUrl.includes('drive.google.com')) {
+             const idMatch = imgUrl.match(/id=([^&]+)/) || imgUrl.match(/d\/([a-zA-Z0-9_-]+)/);
+             if (idMatch && idMatch[1]) {
+                imgUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+             } else {
+               imgUrl = imgUrl.split(',')[0]; 
+             }
+          }
+
+          const imageHTML = imgUrl 
+            ? `<div class="order-img-wrap"><img src="${imgUrl}" alt="Ordered Sticker" class="order-img"/></div>` 
+            : '';
+
           html += `
             <div class="order-card">
               <div class="order-header">
                 <strong>ID: ${d["Order ID"] || 'N/A'}</strong>
-                <span class="order-status">${d["Order Status"] || 'Pending'}</span>
+                <span class="order-status ${statusClass}">${rawStatus}</span>
               </div>
+              ${imageHTML}
               <div class="order-body">
                 <p><strong>Details:</strong> ${d["Order Details"] || 'Custom Sticker'}</p>
                 <p><strong>Submitted:</strong> ${d["Timestamp"] ? new Date(d["Timestamp"]).toLocaleDateString() : 'Recently'}</p>
@@ -56,7 +75,6 @@ async function fetchLiveOrdersFromSheet(user) {
   }
 }
 
-// Auth Listener (Handles Profile Display)
 onAuthStateChanged(auth, async user => {
   if (user) {
     try {

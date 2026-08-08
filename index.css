@@ -167,7 +167,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* =========================================
-   PREMIUM ORDER CARDS & PROFILE UI
+   PREMIUM ORDER CARDS, IMAGES & DYNAMIC STATUS
    ========================================= */
 .orders-grid { 
   display: grid; 
@@ -183,6 +183,8 @@ img { max-width: 100%; display: block; }
   padding: 24px;
   box-shadow: 4px 4px 0px var(--ink);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .order-card:hover { 
@@ -200,15 +202,47 @@ img { max-width: 100%; display: block; }
   font-family: var(--font-mono);
 }
 
+/* Base Status Badge */
 .order-status { 
-  background: var(--stamp); 
-  color: var(--surface); 
   padding: 6px 12px; 
   border-radius: 99px; 
   font-size: 0.75rem; 
   font-weight: 700; 
   text-transform: uppercase; 
   letter-spacing: 0.05em; 
+  border: 1.5px solid transparent;
+}
+
+/* Dynamic Status Colors */
+.status-pending { background: #DFD5B8; color: var(--ink); border-color: var(--ink); }
+.status-approved { background: #2F6B4F; color: var(--surface); }
+.status-printing, .status-processing { background: #93711F; color: var(--surface); }
+.status-delivered, .status-completed { background: var(--ink); color: var(--surface); }
+.status-rejected, .status-cancelled { background: #A8341F; color: var(--surface); }
+
+/* Uploaded Image Display */
+.order-img-wrap {
+  width: 100%;
+  height: 180px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--border-dark);
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: var(--paper-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.order-card:hover .order-img {
+  transform: scale(1.05);
 }
 
 .order-body p { 
