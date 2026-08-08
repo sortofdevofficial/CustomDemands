@@ -1,7 +1,7 @@
 import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxuCnV_ySNaJfIGZpSR--y1xcWuvcclWjiPnrY5Ym-BmxzuSX15wThA94wxDqWkgy0R/exec";
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwbj5zDjfQg40N5ljAS0CCNPMw2NJOowsa9zPGi2OMYJ62xvWlTQwab7ORwKKkI9Cwp/exec";
 
 let currentUser = null;
 
@@ -29,6 +29,9 @@ function renderOrderCard(d) {
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
   const imgUrl = extractImageUrl(d["Upload Design"] || d["Upload Image"] || null);
 
+  // Link for user to edit their Google Form response
+  const editUrl = d["Edit Link"] || d["Edit Response URL"] || d["Response Link"] || d["Edit URL"] || "https://forms.gle/cr2yXjXRaYkXe4FDA";
+
   const imageHTML = imgUrl
     ? `<div class="order-img-wrap">
          <img src="${imgUrl}" alt="Uploaded sticker design" class="order-img" loading="lazy"
@@ -49,6 +52,9 @@ function renderOrderCard(d) {
       <div class="order-body">
         <p><strong>Details</strong> ${d["Order Details"] || 'Custom sticker'}</p>
         <p><strong>Submitted</strong> ${dateText}</p>
+        <a href="${editUrl}" target="_blank" rel="noopener" class="btn-secondary" style="margin-top:12px; width:100%; justify-content:center; text-align:center; font-size:0.85rem; padding:8px 14px;">
+          ✏️ Edit Response / Add Photos
+        </a>
       </div>
     </div>
   `;
@@ -97,113 +103,52 @@ async function fetchLiveOrdersFromSheet(user) {
   ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
 }
 
-// ---- REVIEWS (EMAIL DRIVEN) ----
+// ---- DRONE ANIMATION ----
 
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);
-  });
-}
+const droneBox = $('droneBox');
+let isDelivering = false;
 
-async function fetchPublicReviews() {
-  const container = $('reviewsContainer');
-  if (!container) return;
+if (droneBox) {
+  droneBox.addEventListener('click', () => {
+    if (isDelivering) return;
+    isDelivering = true;
 
-  try {
-    const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getReviews`);
-    const reviews = await res.json();
+    const statusText = $('droneStatusText');
+    const subtext = $('droneSubtext');
+    const percentText = $('dronePercent');
+    const progress = $('droneProgress');
+    const droneIcon = $('droneIcon');
 
-    if (!Array.isArray(reviews) || reviews.length === 0) {
-      container.innerHTML = `<p style="color:var(--ink-faint); text-align:center; grid-column: 1/-1;">No reviews yet. Be the first to leave one!</p>`;
-      return;
-    }
+    droneIcon.classList.add('flying');
 
-    container.innerHTML = reviews.map(r => {
-      // Displays the prefix of the email (e.g. john from john@gmail.com) or 'Anonymous'
-      const displayName = r.email ? r.email.split('@')[0] : 'Anonymous';
+    const steps = [
+      { pct: 25, status: "Finishing order…", sub: "Preparing sticker package in workshop" },
+      { pct: 55, status: "Starting delivery…", sub: "Drone launched into airspace" },
+      { pct: 85, status: "En route to your location…", sub: "Flying straight to your area" },
+      { pct: 100, status: "Delivered to your home! 100%", sub: "Package dropped safely" }
+    ];
 
-      return `
-        <div class="order-card">
-          <div class="order-header">
-            <strong>${displayName}</strong>
-            <span style="color:var(--brass); font-family:var(--font-mono);">${'★'.repeat(r.rating || 5)}</span>
-          </div>
-          ${r.imageUrl ? `
-            <div class="order-img-wrap">
-              <img src="${r.imageUrl}" class="order-img" loading="lazy" alt="Review photo" />
-            </div>` : ''}
-          <div class="order-body">
-            <p>${r.comment || ''}</p>
-          </div>
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    console.error('Error fetching reviews:', err);
-    container.innerHTML = `<p style="color:var(--stamp); text-align:center; grid-column: 1/-1;">Failed to load reviews.</p>`;
-  }
-}
-
-const reviewForm = $('reviewForm');
-if (reviewForm) {
-  reviewForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!currentUser) {
-      alert('Please sign in to leave a review.');
-      return;
-    }
-
-    const btn = $('submitReviewBtn');
-    btn.disabled = true;
-    btn.textContent = 'Posting…';
-
-    try {
-      const fileInput = $('reviewImageInput');
-      let base64Data = null;
-      let fileName = null;
-      let fileType = null;
-
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        base64Data = await fileToBase64(file);
-        fileName = `review_${Date.now()}_${file.name}`;
-        fileType = file.type;
+    let stepIdx = 0;
+    const runStep = () => {
+      if (stepIdx >= steps.length) {
+        droneIcon.classList.remove('flying');
+        subtext.textContent = "Click again to replay simulation";
+        isDelivering = false;
+        return;
       }
 
-      const payload = {
-        action: "addReview",
-        email: currentUser.email, // Saves unchangeable Gmail address
-        rating: $('reviewRating').value,
-        comment: $('reviewComment').value,
-        base64Data: base64Data,
-        fileName: fileName,
-        fileType: fileType
-      };
+      const current = steps[stepIdx];
+      statusText.textContent = current.status;
+      subtext.textContent = current.sub;
+      percentText.textContent = `${current.pct}%`;
+      progress.style.width = `${current.pct}%`;
+      droneIcon.style.left = `calc(${current.pct * 0.82}% + 10px)`;
 
-      const res = await fetch(GOOGLE_SHEET_API_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
+      stepIdx++;
+      setTimeout(runStep, 1000);
+    };
 
-      const result = await res.json();
-      if (result.status === 'success') {
-        alert('Review posted successfully!');
-        reviewForm.reset();
-        fetchPublicReviews();
-      } else {
-        alert('Error: ' + result.message);
-      }
-    } catch (err) {
-      console.error('Failed to submit review:', err);
-      alert('Failed to post review. Please try again.');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Post Review';
-    }
+    runStep();
   });
 }
 
@@ -231,7 +176,6 @@ onAuthStateChanged(auth, async user => {
 });
 
 setInterval(() => fetchLiveOrdersFromSheet(currentUser), 60000);
-fetchPublicReviews();
 
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');

@@ -378,3 +378,94 @@ button { font: inherit; }
   .hero-title { letter-spacing: -0.8px; }
   .btn-primary.lg, .btn-secondary.lg { padding: 13px 22px; font-size: 0.95rem; }
 }
+/* Drone Tracker Card */
+.drone-card {
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 6px 6px 0px var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.drone-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px var(--ink);
+}
+.drone-card:active {
+  transform: translate(0, 0);
+}
+.drone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.drone-badge {
+  background: var(--brass);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.drone-status-text {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.drone-track {
+  position: relative;
+  height: 52px;
+  background: var(--paper-dark);
+  border-radius: 99px;
+  border: 1.5px solid var(--border-dark);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 16px;
+}
+.drone-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--thread);
+  opacity: 0.25;
+  transition: width 0.4s ease;
+}
+.drone-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 1.8rem;
+  z-index: 2;
+  transition: left 0.4s ease;
+}
+.drone-icon.flying {
+  animation: droneBob 0.5s infinite alternate ease-in-out;
+}
+@keyframes droneBob {
+  0% { transform: translateY(-4px); }
+  100% { transform: translateY(3px); }
+}
+.home-icon {
+  position: absolute;
+  right: 14px;
+  font-size: 1.5rem;
+  z-index: 2;
+}
+.drone-footer {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
