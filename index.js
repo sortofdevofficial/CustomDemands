@@ -31,15 +31,21 @@ async function fetchLiveOrdersFromSheet(user) {
           const rawStatus = d["Order Status"] || d["Status"] || 'Pending';
           const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
 
-          // Target exactly "Upload Design" for the image link
+          // Safely extract the Google Drive ID
           let imgUrl = d["Upload Design"] || null;
           
           if (imgUrl && imgUrl.includes('drive.google.com')) {
-             const idMatch = imgUrl.match(/id=([^&]+)/) || imgUrl.match(/d\/([a-zA-Z0-9_-]+)/);
-             if (idMatch && idMatch[1]) {
-                imgUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+             let driveId = null;
+             if (imgUrl.includes('id=')) {
+                driveId = imgUrl.split('id=')[1].split('&')[0];
+             } else if (imgUrl.includes('/d/')) {
+                driveId = imgUrl.split('/d/')[1].split('/')[0];
+             }
+             
+             if (driveId) {
+                imgUrl = `https://drive.google.com/uc?export=view&id=${driveId}`;
              } else {
-               imgUrl = imgUrl.split(',')[0]; 
+                imgUrl = imgUrl.split(',')[0]; 
              }
           }
 
