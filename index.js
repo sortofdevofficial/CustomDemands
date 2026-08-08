@@ -1,7 +1,7 @@
 import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwWpLlrIqTe6QfCSUst3QrQuTeCXmGIFzTyY3xKCtR8i3lpMM47xneONYNREMtnJWOO/exec";
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzxl_ClEceQiqtMLkKluUjGyOVf6hb3GTnAVPXvi9fPFhg8_3wvKqUmkHNT2rHTKYaq/exec";
 
 let currentUser = null;
 
