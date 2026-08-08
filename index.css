@@ -167,7 +167,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* =========================================
-   PREMIUM ORDER CARDS, IMAGES & DYNAMIC STATUS
+   ORDER CARDS & DISPLAY FIXES
    ========================================= */
 .orders-grid { 
   display: grid; 
@@ -202,7 +202,6 @@ img { max-width: 100%; display: block; }
   font-family: var(--font-mono);
 }
 
-/* Base Status Badge */
 .order-status { 
   padding: 6px 12px; 
   border-radius: 99px; 
@@ -213,14 +212,13 @@ img { max-width: 100%; display: block; }
   border: 1.5px solid transparent;
 }
 
-/* Dynamic Status Colors */
 .status-pending { background: #DFD5B8; color: var(--ink); border-color: var(--ink); }
 .status-approved { background: #2F6B4F; color: var(--surface); }
 .status-printing, .status-processing { background: #93711F; color: var(--surface); }
 .status-delivered, .status-completed { background: var(--ink); color: var(--surface); }
 .status-rejected, .status-cancelled { background: #A8341F; color: var(--surface); }
 
-/* Uploaded Image Display */
+/* Image Display Container */
 .order-img-wrap {
   width: 100%;
   height: 180px;
@@ -241,6 +239,12 @@ img { max-width: 100%; display: block; }
   transition: transform 0.3s ease;
 }
 
+.img-error {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--stamp);
+}
+
 .order-card:hover .order-img {
   transform: scale(1.05);
 }
@@ -258,7 +262,6 @@ img { max-width: 100%; display: block; }
   text-transform: uppercase;
 }
 
-/* Enhancing Profile in Nav */
 #navUser {
   background: var(--paper-dark);
   padding: 6px 16px 6px 6px;
@@ -271,7 +274,6 @@ img { max-width: 100%; display: block; }
   border-color: var(--ink);
 }
 
-/* Footer */
 .footer { background: var(--paper-dark); border-top: 1px solid var(--border-dark); padding: 50px 5% 30px; }
 .footer-in { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
 .footer-logo { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }

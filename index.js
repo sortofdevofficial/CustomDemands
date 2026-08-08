@@ -31,26 +31,30 @@ async function fetchLiveOrdersFromSheet(user) {
           const rawStatus = d["Order Status"] || d["Status"] || 'Pending';
           const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
 
-          // Safely extract the Google Drive ID
-          let imgUrl = d["Upload Design"] || null;
+          // Safely extract Google Drive file ID for thumbnail rendering
+          let rawImgUrl = d["Upload Design"] || d["Upload Image"] || null;
+          let imgUrl = null;
           
-          if (imgUrl && imgUrl.includes('drive.google.com')) {
-             let driveId = null;
-             if (imgUrl.includes('id=')) {
-                driveId = imgUrl.split('id=')[1].split('&')[0];
-             } else if (imgUrl.includes('/d/')) {
-                driveId = imgUrl.split('/d/')[1].split('/')[0];
-             }
-             
-             if (driveId) {
-                imgUrl = `https://drive.google.com/uc?export=view&id=${driveId}`;
-             } else {
-                imgUrl = imgUrl.split(',')[0]; 
-             }
+          if (rawImgUrl) {
+            let driveId = null;
+            if (rawImgUrl.includes('id=')) {
+              driveId = rawImgUrl.split('id=')[1].split('&')[0];
+            } else if (rawImgUrl.includes('/d/')) {
+              driveId = rawImgUrl.split('/d/')[1].split('/')[0];
+            }
+
+            if (driveId) {
+              // Direct image view endpoint that bypasses Drive embedding limits
+              imgUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
+            } else if (rawImgUrl.startsWith('http')) {
+              imgUrl = rawImgUrl.split(',')[0].trim(); 
+            }
           }
 
           const imageHTML = imgUrl 
-            ? `<div class="order-img-wrap"><img src="${imgUrl}" alt="Ordered Sticker" class="order-img"/></div>` 
+            ? `<div class="order-img-wrap">
+                 <img src="${imgUrl}" alt="Ordered Sticker" class="order-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<p class=\\'img-error\\'>Image unavailable</p>';"/>
+               </div>` 
             : '';
 
           html += `
