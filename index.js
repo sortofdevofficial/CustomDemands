@@ -1,8 +1,6 @@
-import { auth, onAuthStateChanged, doc, getDoc } from './firebase.js';
+import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-
-// Replace with your actual Google Apps Script Web App URL
 const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwObDIl7NRo2UBHw1mLcz7EGhP8pKw6vUz9noX6BzQoJG47FKTM5D2uy2oi-sfKtg2d/exec";
 
 async function fetchLiveOrdersFromSheet(user) {
@@ -13,27 +11,34 @@ async function fetchLiveOrdersFromSheet(user) {
     const response = await fetch(GOOGLE_SHEET_API_URL);
     const orders = await response.json();
 
-    // 1. Update total orders count in Hero
+    // 1. Live Total Count
     if (countDisplay) {
-      countDisplay.textContent = orders.length > 0 ? `${orders.length} Active Dockets` : '0 Active Dockets';
+      countDisplay.textContent = `${orders.length} Active Dockets`;
     }
 
-    // 2. Filter & Display user specific orders if logged in
     if (!ordersContainer) return;
 
     if (user) {
-      const userOrders = orders.filter(order => String(order.uid) === String(user.uid));
+      // 2. FIX: Match by Google Form 'Email address', NOT 'uid'
+      const userOrders = orders.filter(order => 
+        order["Email address"] && order["Email address"].toLowerCase() === user.email.toLowerCase()
+      );
 
       if (userOrders.length === 0) {
-        ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for your profile. Submit your details through the Google Form order link!</p>`;
+        ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong>. Submit your details through the Google Form order link!</p>`;
       } else {
-        let html = '<div style="display:flex; flex-direction:column; gap:12px;">';
+        let html = '<div class="orders-grid">';
         userOrders.forEach(d => {
           html += `
-            <div style="background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:6px;">
-              <strong>Docket ID:</strong> ${d.id || 'N/A'}<br>
-              <strong>Status:</strong> <span style="color:var(--stamp);">${d.status || 'Received'}</span><br>
-              <strong>Details:</strong> ${d.details || 'Custom Sticker'}
+            <div class="order-card">
+              <div class="order-header">
+                <strong>ID: ${d["Order ID"] || 'N/A'}</strong>
+                <span class="order-status">${d["Order Status"] || 'Pending'}</span>
+              </div>
+              <div class="order-body">
+                <p><strong>Details:</strong> ${d["Order Details"] || 'Custom Sticker'}</p>
+                <p><strong>Submitted:</strong> ${d["Timestamp"] ? new Date(d["Timestamp"]).toLocaleDateString() : 'Recently'}</p>
+              </div>
             </div>
           `;
         });
@@ -45,13 +50,13 @@ async function fetchLiveOrdersFromSheet(user) {
     }
 
   } catch (err) {
-    console.error("Error fetching live sheet data:", err);
+    console.error("Error fetching sheet data:", err);
     if (countDisplay) countDisplay.textContent = 'Unavailable';
     if (ordersContainer) ordersContainer.innerHTML = `<p style="color:var(--stamp);">Failed to load live spreadsheet data.</p>`;
   }
 }
 
-// Auth Listener
+// Auth Listener (Handles Profile Display)
 onAuthStateChanged(auth, async user => {
   if (user) {
     try {

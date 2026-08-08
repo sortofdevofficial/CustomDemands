@@ -166,6 +166,77 @@ img { max-width: 100%; display: block; }
   white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em;
 }
 
+/* =========================================
+   PREMIUM ORDER CARDS & PROFILE UI
+   ========================================= */
+.orders-grid { 
+  display: grid; 
+  gap: 20px; 
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+  margin-top: 20px;
+}
+
+.order-card {
+  background: var(--surface); 
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius); 
+  padding: 24px;
+  box-shadow: 4px 4px 0px var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.order-card:hover { 
+  transform: translate(-2px, -2px); 
+  box-shadow: 6px 6px 0px var(--ink); 
+}
+
+.order-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  border-bottom: 2px dashed var(--border-dark); 
+  padding-bottom: 16px; 
+  margin-bottom: 16px; 
+  font-family: var(--font-mono);
+}
+
+.order-status { 
+  background: var(--stamp); 
+  color: var(--surface); 
+  padding: 6px 12px; 
+  border-radius: 99px; 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.05em; 
+}
+
+.order-body p { 
+  font-size: 0.95rem; 
+  color: var(--ink-muted); 
+  margin-bottom: 8px; 
+}
+
+.order-body strong { 
+  color: var(--ink); 
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+/* Enhancing Profile in Nav */
+#navUser {
+  background: var(--paper-dark);
+  padding: 6px 16px 6px 6px;
+  border-radius: 99px;
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+#navUser:hover {
+  border-color: var(--ink);
+}
+
 /* Footer */
 .footer { background: var(--paper-dark); border-top: 1px solid var(--border-dark); padding: 50px 5% 30px; }
 .footer-in { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
