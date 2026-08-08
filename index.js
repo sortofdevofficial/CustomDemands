@@ -1,7 +1,7 @@
 import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxA6UClnGl2B_NlpV0yXaA5UaNAuP4rt20yhnAo1hxSmUeNRjuIVKw8FyiKP0prG9mF/exec";
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyqNHQfCxP-f_F5z9vJi9WyeEWwoSJyZeuBT3q7va_KFIbdjosPfMO4NauUMjq7-vwm/exec";
 
 let currentUser = null;
 
@@ -25,7 +25,6 @@ function extractImageUrl(raw) {
 }
 
 function renderOrderCard(d) {
-  // Grabs whatever exact text is in the 'Order Status' or 'Status' column
   const rawStatus = (d["Order Status"] || d["Status"] || 'Pending').toString();
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
   const imgUrl = extractImageUrl(d["Upload Design"] || d["Upload Image"] || null);
@@ -98,7 +97,7 @@ async function fetchLiveOrdersFromSheet(user) {
   ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
 }
 
-// ---- REVIEW SYSTEM ADDITIONS ----
+// ---- REVIEWS (EMAIL DRIVEN) ----
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -122,21 +121,26 @@ async function fetchPublicReviews() {
       return;
     }
 
-    container.innerHTML = reviews.map(r => `
-      <div class="order-card">
-        <div class="order-header">
-          <strong>${r.username || 'Anonymous'}</strong>
-          <span style="color:var(--brass); font-family:var(--font-mono);">${'★'.repeat(r.rating || 5)}</span>
+    container.innerHTML = reviews.map(r => {
+      // Displays the prefix of the email (e.g. john from john@gmail.com) or 'Anonymous'
+      const displayName = r.email ? r.email.split('@')[0] : 'Anonymous';
+
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <strong>${displayName}</strong>
+            <span style="color:var(--brass); font-family:var(--font-mono);">${'★'.repeat(r.rating || 5)}</span>
+          </div>
+          ${r.imageUrl ? `
+            <div class="order-img-wrap">
+              <img src="${r.imageUrl}" class="order-img" loading="lazy" alt="Review photo" />
+            </div>` : ''}
+          <div class="order-body">
+            <p>${r.comment || ''}</p>
+          </div>
         </div>
-        ${r.imageUrl ? `
-          <div class="order-img-wrap">
-            <img src="${r.imageUrl}" class="order-img" loading="lazy" alt="Review photo" />
-          </div>` : ''}
-        <div class="order-body">
-          <p>${r.comment || ''}</p>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch (err) {
     console.error('Error fetching reviews:', err);
     container.innerHTML = `<p style="color:var(--stamp); text-align:center; grid-column: 1/-1;">Failed to load reviews.</p>`;
@@ -147,6 +151,12 @@ const reviewForm = $('reviewForm');
 if (reviewForm) {
   reviewForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+      alert('Please sign in to leave a review.');
+      return;
+    }
+
     const btn = $('submitReviewBtn');
     btn.disabled = true;
     btn.textContent = 'Posting…';
@@ -166,7 +176,7 @@ if (reviewForm) {
 
       const payload = {
         action: "addReview",
-        username: currentUser ? (currentUser.displayName || 'Member') : 'Anonymous',
+        email: currentUser.email, // Saves unchangeable Gmail address
         rating: $('reviewRating').value,
         comment: $('reviewComment').value,
         base64Data: base64Data,
@@ -221,7 +231,7 @@ onAuthStateChanged(auth, async user => {
 });
 
 setInterval(() => fetchLiveOrdersFromSheet(currentUser), 60000);
-fetchPublicReviews(); // Load reviews on startup
+fetchPublicReviews();
 
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
