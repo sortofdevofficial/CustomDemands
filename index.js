@@ -1,34 +1,37 @@
-import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs, query, where } from './firebase.js';
+import { auth, onAuthStateChanged, doc, getDoc } from './firebase.js';
 
 const $ = id => document.getElementById(id);
 
-// Fetch Total System Orders & User Orders
-async function initializeAppData(user) {
+// Replace with your actual Google Apps Script Web App URL
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwObDIl7NRo2UBHw1mLcz7EGhP8pKw6vUz9noX6BzQoJG47FKTM5D2uy2oi-sfKtg2d/exec";
+
+async function fetchLiveOrdersFromSheet(user) {
+  const ordersContainer = $('userOrdersContainer');
+  const countDisplay = $('totalOrdersCount');
+
   try {
-    // 1. Fetch Total Orders across all database users/demands
-    const demandsSnap = await getDocs(collection(db, 'demands'));
-    const totalCount = demandsSnap.size;
-    if ($('totalOrdersCount')) {
-      $('totalOrdersCount').textContent = totalCount > 0 ? totalCount : '0 Active Dockets';
+    const response = await fetch(GOOGLE_SHEET_API_URL);
+    const orders = await response.json();
+
+    // 1. Update total orders count in Hero
+    if (countDisplay) {
+      countDisplay.textContent = orders.length > 0 ? `${orders.length} Active Dockets` : '0 Active Dockets';
     }
 
-    // 2. Fetch specific user orders container data if logged in
-    const ordersContainer = $('userOrdersContainer');
+    // 2. Filter & Display user specific orders if logged in
     if (!ordersContainer) return;
 
     if (user) {
-      const q = query(collection(db, 'demands'), where('uid', '==', user.uid));
-      const userDemandsSnap = await getDocs(q);
+      const userOrders = orders.filter(order => String(order.uid) === String(user.uid));
 
-      if (userDemandsSnap.empty) {
-        ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders logged to your UID profile yet. Submit your details through the Google Form order link!</p>`;
+      if (userOrders.length === 0) {
+        ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for your profile. Submit your details through the Google Form order link!</p>`;
       } else {
         let html = '<div style="display:flex; flex-direction:column; gap:12px;">';
-        userDemandsSnap.forEach(docSnap => {
-          const d = docSnap.data();
+        userOrders.forEach(d => {
           html += `
             <div style="background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:6px;">
-              <strong>Docket ID:</strong> ${d.id || docSnap.id}<br>
+              <strong>Docket ID:</strong> ${d.id || 'N/A'}<br>
               <strong>Status:</strong> <span style="color:var(--stamp);">${d.status || 'Received'}</span><br>
               <strong>Details:</strong> ${d.details || 'Custom Sticker'}
             </div>
@@ -40,13 +43,15 @@ async function initializeAppData(user) {
     } else {
       ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in using your account to track your localized orders.</p>`;
     }
+
   } catch (err) {
-    console.error("Error fetching ledger data:", err);
-    if ($('totalOrdersCount')) $('totalOrdersCount').textContent = 'Unavailable';
+    console.error("Error fetching live sheet data:", err);
+    if (countDisplay) countDisplay.textContent = 'Unavailable';
+    if (ordersContainer) ordersContainer.innerHTML = `<p style="color:var(--stamp);">Failed to load live spreadsheet data.</p>`;
   }
 }
 
-// Auth State Listener
+// Auth Listener
 onAuthStateChanged(auth, async user => {
   if (user) {
     try {
@@ -61,13 +66,12 @@ onAuthStateChanged(auth, async user => {
       if ($('navSignIn')) $('navSignIn').style.display = 'none';
       if ($('navUser')) $('navUser').style.display = 'flex';
     } catch (error) {
-      console.error("Error fetching user session metadata:", error);
+      console.error("Error fetching profile metadata:", error);
     }
   } else {
     if ($('navSignIn')) $('navSignIn').style.display = 'inline-block';
     if ($('navUser')) $('navUser').style.display = 'none';
   }
 
-  // Run database sync loaders
-  initializeAppData(user);
+  fetchLiveOrdersFromSheet(user);
 });
