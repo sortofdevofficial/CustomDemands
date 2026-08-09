@@ -122,14 +122,31 @@ function listenToLiveOrdersFromFirebase(user) {
   });
 }
 
+// Count numbers up smoothly instead of snapping straight to the new value
+const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function animateCount(el, to) {
+  if (!el) return;
+  const from = parseInt(el.textContent, 10) || 0;
+  if (prefersReducedMotion || from === to) { el.textContent = to; return; }
+  const duration = 650;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 // Fetch Global Platform Statistics
 async function fetchPlatformStats() {
   try {
     const usersSnap = await getDocs(collection(db, 'users'));
     const ordersSnap = await getDocs(collection(db, 'orders'));
     
-    if($('totalUsersCount')) $('totalUsersCount').textContent = usersSnap.size;
-    if($('totalOrdersCount')) $('totalOrdersCount').textContent = ordersSnap.size;
+    if($('totalUsersCount')) animateCount($('totalUsersCount'), usersSnap.size);
+    if($('totalOrdersCount')) animateCount($('totalOrdersCount'), ordersSnap.size);
   } catch (err) {
     console.error("Error fetching stats:", err);
   }
@@ -288,4 +305,30 @@ if (navToggle && navLinks) {
     const open = navLinks.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+}
+
+// Nav gains a subtle shadow once the page has scrolled
+const navEl = document.querySelector('.nav');
+if (navEl) {
+  const onNavScroll = () => navEl.classList.toggle('is-scrolled', window.scrollY > 8);
+  onNavScroll();
+  window.addEventListener('scroll', onNavScroll, { passive: true });
+}
+
+// Scroll-reveal: sections/ledgers fade + rise into view as the user scrolls
+const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+if (revealEls.length) {
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
 }
