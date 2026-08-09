@@ -317,6 +317,149 @@ button { font: inherit; }
   font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-faint);
 }
 
+/* =========================================
+   TRUCK DELIVERY BUTTON
+   A "Complete Order" micro-interaction: click, a box loads,
+   a truck drives it across, then it morphs into a checkmark.
+   ========================================= */
+.truck-btn {
+  --tb-box: #C9A257;
+  --tb-box-shadow: #A3813C;
+  --tb-cab: var(--paper);
+  --tb-cargo: var(--ink);
+  --tb-wheel: #14100D;
+  --tb-wheel-inner: var(--paper);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  min-width: 236px;
+}
+.truck-btn .tb-label {
+  position: relative;
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.3em;
+}
+.truck-btn .tb-text {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.02rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.25s ease;
+  white-space: nowrap;
+}
+.truck-btn .tb-success {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+.truck-btn .tb-check {
+  width: 13px; height: 11px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 16px; stroke-dashoffset: 16px;
+  transition: stroke-dashoffset 0.4s ease 0.15s;
+}
+.truck-btn.is-animating .tb-default { opacity: 0; }
+.truck-btn.is-done .tb-default { opacity: 0; }
+.truck-btn.is-done .tb-success { opacity: 1; }
+.truck-btn.is-done .tb-check { stroke-dashoffset: 0; }
+
+/* the delivery lane, collapsed by default */
+.tb-lane {
+  position: relative;
+  max-height: 0;
+  overflow: hidden;
+  background: rgba(0,0,0,0.12);
+  transition: max-height 0.3s ease;
+}
+.truck-btn.is-animating .tb-lane,
+.truck-btn.is-done .tb-lane { max-height: 34px; }
+
+.tb-progress {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  background: rgba(255,255,255,0.14);
+  transition: width 1.7s linear;
+}
+.truck-btn.is-animating .tb-progress,
+.truck-btn.is-done .tb-progress { width: 100%; }
+
+/* the box that gets loaded before the truck departs */
+.tb-box {
+  position: absolute; left: 14px; bottom: 4px;
+  width: 11px; height: 11px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--tb-box), var(--tb-box-shadow));
+  opacity: 0; transform: translate(0, 6px) scale(0.6);
+  transition: opacity 0.25s ease 0.05s, transform 0.3s ease 0.05s;
+}
+.truck-btn.is-animating .tb-box {
+  opacity: 1; transform: translate(30px, 0) scale(1);
+  transition: opacity 0.25s ease 0.05s, transform 0.35s ease 0.05s, opacity 0.2s ease 0.45s;
+}
+.truck-btn.is-animating .tb-box { animation: tb-box-load 0.6s ease forwards; }
+@keyframes tb-box-load {
+  0%   { opacity: 0; transform: translate(0, 6px) scale(0.6); }
+  55%  { opacity: 1; transform: translate(30px, 0) scale(1); }
+  100% { opacity: 0; transform: translate(30px, 0) scale(1); }
+}
+
+/* the truck itself */
+.tb-truck {
+  position: absolute; bottom: 3px; left: 0;
+  width: 46px; height: 22px;
+  transform: translateX(-60px);
+}
+.truck-btn.is-animating .tb-truck,
+.truck-btn.is-done .tb-truck {
+  animation: tb-drive 1.7s cubic-bezier(.5,.02,.4,1) 0.55s forwards;
+}
+@keyframes tb-drive {
+  0%   { transform: translateX(-60px); }
+  85%  { transform: translateX(calc(100% + 40px)); }
+  100% { transform: translateX(calc(100% + 90px)); opacity: 0; }
+}
+.tb-cargo {
+  position: absolute; left: 0; bottom: 0; width: 28px; height: 18px;
+  background: var(--tb-cargo); border-radius: 2px 2px 0 0;
+}
+.tb-cab {
+  position: absolute; left: 27px; bottom: 0; width: 16px; height: 14px;
+  background: var(--tb-cab); border-radius: 0 3px 0 0;
+}
+.tb-window {
+  position: absolute; left: 3px; top: 2px; width: 8px; height: 6px;
+  background: var(--tb-cargo); opacity: 0.35; border-radius: 1px;
+  clip-path: polygon(0 0, 70% 0, 100% 100%, 0 100%);
+}
+.tb-wheel {
+  position: absolute; bottom: -3px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--tb-wheel); box-shadow: inset 0 0 0 2px var(--tb-wheel-inner);
+}
+.tb-wheel-1 { left: 5px; }
+.tb-wheel-2 { left: 30px; }
+.truck-btn.is-animating .tb-wheel,
+.truck-btn.is-done .tb-wheel { animation: tb-spin 0.4s linear infinite; }
+@keyframes tb-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .truck-btn.is-animating .tb-truck,
+  .truck-btn.is-done .tb-truck,
+  .truck-btn.is-animating .tb-box,
+  .truck-btn.is-animating .tb-wheel,
+  .truck-btn.is-done .tb-wheel { animation: none; }
+  .truck-btn.is-done .tb-truck { opacity: 0; }
+}
+
 /* ---------------------------------------------------------------
    Responsive — every breakpoint gets deliberate treatment
    --------------------------------------------------------------- */
