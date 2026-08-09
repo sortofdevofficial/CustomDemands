@@ -19,11 +19,9 @@ function renderOrderCard(d) {
        </div>`
     : '';
 
-  // Handle Firebase Timestamps properly
   const timestamp = d.timestamp ? (d.timestamp.toDate ? d.timestamp.toDate() : new Date(d.timestamp)) : null;
   const dateText = timestamp && !isNaN(timestamp) ? timestamp.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently';
   
-  // Handle custom Delivery text
   const deliveredText = d.Delivered ? d.Delivered : 'Pending Delivery';
 
   return `
@@ -40,6 +38,23 @@ function renderOrderCard(d) {
     </div>
   `;
 }
+
+// Fetch stats function (New Feature)
+async function fetchPlatformStats() {
+  try {
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const ordersSnap = await getDocs(collection(db, 'orders'));
+    
+    if($('totalUsersCount')) $('totalUsersCount').textContent = usersSnap.size;
+    if($('totalOrdersCount')) $('totalOrdersCount').textContent = ordersSnap.size;
+  } catch (err) {
+    console.error("Error fetching platform stats:", err);
+    if($('totalUsersCount')) $('totalUsersCount').textContent = 'N/A';
+    if($('totalOrdersCount')) $('totalOrdersCount').textContent = 'N/A';
+  }
+}
+// Run stats fetch on load
+fetchPlatformStats(); 
 
 // Fetch orders straight from Firebase
 async function fetchLiveOrdersFromFirebase(user) {
@@ -60,7 +75,6 @@ async function fetchLiveOrdersFromFirebase(user) {
       orders.push({ id: doc.id, ...doc.data() });
     });
 
-    // Sort descending by timestamp
     orders.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
 
     if (orders.length === 0) {
@@ -108,15 +122,12 @@ if (orderForm) {
     };
 
     submitBtn.disabled = true;
-    
-    // START: Reset truck state
     submitBtn.classList.remove('is-done', 'is-animating');
-    void submitBtn.offsetWidth; // trigger reflow
+    void submitBtn.offsetWidth;
     
     try {
       setStatus('Uploading design...', 'is-active');
 
-      // 1. Upload to ImgBB
       const formData = new FormData();
       formData.append('image', file);
 
@@ -131,18 +142,16 @@ if (orderForm) {
 
       setStatus('Saving to ledger...', 'is-active');
 
-      // 2. Save order to Firebase Firestore
       await addDoc(collection(db, 'orders'), {
         userId: currentUser.uid,
         userEmail: currentUser.email,
         imageUrl: imageUrl,
         details: notesInput.value,
-        status: 'Packaging', // New Default Status
-        Delivered: '',       // Admin will edit this manually later
+        status: 'Packaging',
+        Delivered: '',       
         timestamp: serverTimestamp()
       });
 
-      // 3. Play Success Truck Animation
       submitBtn.classList.add('is-animating');
       setStatus('Packing your sticker order…', 'is-active');
       
@@ -154,10 +163,9 @@ if (orderForm) {
         submitBtn.classList.add('is-done');
         setStatus('Order placed ✓', 'is-done');
         
-        // Refresh Orders Grid
         fetchLiveOrdersFromFirebase(currentUser);
+        fetchPlatformStats(); // Update global stats
         
-        // Reset the form after success
         setTimeout(() => {
           submitBtn.classList.remove('is-done');
           submitBtn.disabled = false;
@@ -181,13 +189,24 @@ onAuthStateChanged(auth, async user => {
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       const uname = snap.exists() ? snap.data().username : null;
-      if ($('navUsernameText')) $('navUsernameText').textContent = '@' + (uname || user.displayName || 'member');
+      const displayUname = uname || user.displayName || 'member';
+      
+      if ($('navUsernameText')) $('navUsernameText').textContent = '@' + displayUname;
       if ($('navAvatar')) $('navAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'U')}&background=1E2621&color=ECE6D6`;
       if ($('navSignIn')) $('navSignIn').style.display = 'none';
       if ($('navUser')) $('navUser').style.display = 'flex';
       
-      // Go to profile on click
       $('navUser').addEventListener('click', () => window.location.href = 'auth.html?settings');
+      
+      // Show Dashboard and set Profile Details
+      if ($('dashboardSection')) {
+          $('dashboardSection').style.display = 'block';
+          $('profileDetails').innerHTML = `
+             <strong>Email:</strong> ${user.email} <br/> 
+             <strong>Username:</strong> @${displayUname} <br/>
+             <strong>Account ID:</strong> ${user.uid}
+          `;
+      }
     } catch (error) {
       console.error("Error fetching profile metadata:", error);
     }
@@ -197,12 +216,12 @@ onAuthStateChanged(auth, async user => {
         $('navSignIn').addEventListener('click', () => window.location.href = 'auth.html');
     }
     if ($('navUser')) $('navUser').style.display = 'none';
+    if ($('dashboardSection')) $('dashboardSection').style.display = 'none';
   }
 
   fetchLiveOrdersFromFirebase(user);
 });
 
-// Mobile Nav Toggle
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
 if (navToggle && navLinks) {
