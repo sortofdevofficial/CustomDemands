@@ -29,7 +29,6 @@
     <div class="nav-links" id="navLinks">
       <a href="#categories">Catalog</a>
       <a href="#myOrdersSection">My Orders</a>
-      <a href="#droneTracker">Drone Tracker</a>
       <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
     </div>
     <div class="nav-right">
@@ -134,30 +133,34 @@
     </div>
   </section>
 
-  <!-- Interactive Drone Delivery Tracker -->
-  <section class="section" id="droneTracker">
+  <!-- Order Dispatch Showcase -->
+  <section class="section" id="dispatchDemo">
     <div class="sec-head center">
-      <div class="sec-eyebrow">Express Air Relay</div>
-      <h2 class="sec-title">Interactive <em>Drone Delivery</em></h2>
-      <p class="sec-sub">Click the tracker below to simulate live drone dispatch to your doorstep!</p>
+      <div class="sec-eyebrow">Workshop Dispatch</div>
+      <h2 class="sec-title">Watch your order <em>ship out</em></h2>
+      <p class="sec-sub">This is exactly what happens when you place a real order — click it.</p>
     </div>
 
-    <div id="droneBox" class="drone-card">
-      <div class="drone-header">
-        <span class="drone-badge">⚡ Live Simulation</span>
-        <span id="droneStatusText" class="drone-status-text">Click to start delivery</span>
-      </div>
-
-      <div class="drone-track">
-        <div id="droneIcon" class="drone-icon">🛸</div>
-        <div class="home-icon">🏠</div>
-        <div id="droneProgress" class="drone-progress-fill" style="width: 0%;"></div>
-      </div>
-
-      <div class="drone-footer">
-        <span id="dronePercent">0%</span>
-        <span id="droneSubtext">Tap box to launch drone</span>
-      </div>
+    <div class="truck-showcase">
+      <a href="https://forms.gle/cr2yXjXRaYkXe4FDA" target="_blank" rel="noopener" class="btn-primary xl truck-btn">
+        <span class="tb-label">
+          <span class="tb-text tb-default">Dispatch My Order →</span>
+          <span class="tb-text tb-success">
+            Order Placed
+            <svg class="tb-check" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg>
+          </span>
+        </span>
+        <span class="tb-lane">
+          <span class="tb-progress"></span>
+          <span class="tb-box"></span>
+          <span class="tb-truck">
+            <span class="tb-cargo"></span>
+            <span class="tb-cab"><span class="tb-window"></span></span>
+            <span class="tb-wheel tb-wheel-1"></span>
+            <span class="tb-wheel tb-wheel-2"></span>
+          </span>
+        </span>
+      </a>
     </div>
   </section>
 

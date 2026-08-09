@@ -135,55 +135,6 @@ document.querySelectorAll('.truck-btn').forEach(btn => {
   });
 });
 
-// ---- DRONE ANIMATION ----
-
-const droneBox = $('droneBox');
-let isDelivering = false;
-
-if (droneBox) {
-  droneBox.addEventListener('click', () => {
-    if (isDelivering) return;
-    isDelivering = true;
-
-    const statusText = $('droneStatusText');
-    const subtext = $('droneSubtext');
-    const percentText = $('dronePercent');
-    const progress = $('droneProgress');
-    const droneIcon = $('droneIcon');
-
-    droneIcon.classList.add('flying');
-
-    const steps = [
-      { pct: 25, status: "Finishing order…", sub: "Preparing sticker package in workshop" },
-      { pct: 55, status: "Starting delivery…", sub: "Drone launched into airspace" },
-      { pct: 85, status: "En route to your location…", sub: "Flying straight to your area" },
-      { pct: 100, status: "Delivered to your home! 100%", sub: "Package dropped safely" }
-    ];
-
-    let stepIdx = 0;
-    const runStep = () => {
-      if (stepIdx >= steps.length) {
-        droneIcon.classList.remove('flying');
-        subtext.textContent = "Click again to replay simulation";
-        isDelivering = false;
-        return;
-      }
-
-      const current = steps[stepIdx];
-      statusText.textContent = current.status;
-      subtext.textContent = current.sub;
-      percentText.textContent = `${current.pct}%`;
-      progress.style.width = `${current.pct}%`;
-      droneIcon.style.left = `calc(${current.pct * 0.82}% + 10px)`;
-
-      stepIdx++;
-      setTimeout(runStep, 1000);
-    };
-
-    runStep();
-  });
-}
-
 // ---- AUTH & INIT ----
 
 onAuthStateChanged(auth, async user => {
