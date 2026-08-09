@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Delivery Console — Workshop</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <span class="mark">CS</span>
+      Custom<strong>Stickers</strong>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Main Store</a>
+      <a href="delivery.html" style="color:var(--stamp);">Driver Portal</a>
+    </div>
+    <div class="nav-right">
+      <button id="driverSignInBtn" class="btn-primary">Sign In as Driver</button>
+      <div id="driverUser" style="display:none; align-items:center; gap:10px;">
+        <img id="driverAvatar" src="" alt="Driver Avatar" style="width:32px; height:32px; border-radius:50%;">
+        <span id="driverName" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600;"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Driver Header -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Dispatch Control</div>
+      <h2 class="sec-title">Driver <em>Live Dashboard</em></h2>
+      <p class="sec-sub">Update order statuses and stream live GPS coordinates directly to customers.</p>
+    </div>
+
+    <!-- Live Driver Controls -->
+    <div id="driverStatusCard" class="order-card" style="margin-bottom: 28px; background: var(--paper-dark);">
+      <div class="order-header">
+        <strong>GPS Transmitter Status</strong>
+        <span id="gpsBadge" class="order-status status-packaging">GPS Offline</span>
+      </div>
+      <div class="order-body">
+        <p><strong>Current Coordinates</strong> <span id="driverCoords">Tap "Start Live GPS Broadcast" on an active order</span></p>
+        <p><strong>Telemetry Speed</strong> <span id="driverSpeed">0 km/h</span></p>
+      </div>
+    </div>
+
+    <!-- Active Orders for Drivers -->
+    <div class="sec-head">
+      <h3 style="font-family:var(--font-display); font-size:1.4rem;">Orders Needing Dispatch</h3>
+    </div>
+    <div id="driverOrdersContainer" style="font-family:var(--font-mono); font-size:0.9rem; color:var(--ink-muted);">
+      <p>Loading dispatch list...</p>
+    </div>
+  </section>
+
+  <script type="module" src="delivery.js"></script>
+</body>
+</html>

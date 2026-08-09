@@ -1,11 +1,22 @@
-import { auth, db, onAuthStateChanged, doc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from './firebase.js';
+import { auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, collection, addDoc, query, where, onSnapshot, getDocs, serverTimestamp } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-
-// Replace with your actual ImgBB API Key
 const IMGBB_API_KEY = "c98dd32e4c593b29c792c38630d3e10a"; 
 
 let currentUser = null;
+let activeMaps = {}; // Stores map instance and marker per order
+
+// Handle Google Sign-In Popup
+if ($('navSignIn')) {
+  $('navSignIn').addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (err) {
+      console.error("Sign in error:", err);
+      alert("Sign in failed. Please try again.");
+    }
+  });
+}
 
 function renderOrderCard(d) {
   const rawStatus = (d.status || 'Packaging').toString();
@@ -21,11 +32,11 @@ function renderOrderCard(d) {
 
   const timestamp = d.timestamp ? (d.timestamp.toDate ? d.timestamp.toDate() : new Date(d.timestamp)) : null;
   const dateText = timestamp && !isNaN(timestamp) ? timestamp.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently';
-  
   const deliveredText = d.Delivered ? d.Delivered : 'Pending Delivery';
+  const isOutForDelivery = rawStatus.toLowerCase() === 'out for delivery';
 
   return `
-    <div class="order-card">
+    <div class="order-card" id="card-${d.id}">
       <div class="order-header">
         <strong>Submitted: ${dateText}</strong>
         <span class="order-status ${statusClass}">${rawStatus}</span>
@@ -34,46 +45,61 @@ function renderOrderCard(d) {
       <div class="order-body">
         <p><strong>Details</strong> ${d.details || 'Custom sticker'}</p>
         <p><strong>Delivered</strong> ${deliveredText}</p>
+        
+        ${isOutForDelivery ? `
+          <div class="driver-status-badge">
+            <span class="pulse-dot"></span> Driver Location Active
+          </div>
+          <div class="tracker-wrap">
+            <div class="tracker-header">
+              <span>Live Delivery Route</span>
+              <span id="speed-${d.id}">${d.driverSpeed || 'Moving'}</span>
+            </div>
+            <div id="map-${d.id}" class="tracker-map"></div>
+          </div>
+        ` : ''}
       </div>
     </div>
   `;
 }
 
-// Fetch stats function (New Feature)
-async function fetchPlatformStats() {
-  try {
-    const usersSnap = await getDocs(collection(db, 'users'));
-    const ordersSnap = await getDocs(collection(db, 'orders'));
-    
-    if($('totalUsersCount')) $('totalUsersCount').textContent = usersSnap.size;
-    if($('totalOrdersCount')) $('totalOrdersCount').textContent = ordersSnap.size;
-  } catch (err) {
-    console.error("Error fetching platform stats:", err);
-    if($('totalUsersCount')) $('totalUsersCount').textContent = 'N/A';
-    if($('totalOrdersCount')) $('totalOrdersCount').textContent = 'N/A';
+// Update or Initialize Real-Time Leaflet Map
+function updateLiveMap(orderId, lat, lng) {
+  const container = document.getElementById(`map-${orderId}`);
+  if (!container || typeof L === 'undefined') return;
+
+  const coords = [lat || 28.6139, lng || 77.2090];
+
+  if (activeMaps[orderId]) {
+    // Smooth movement
+    activeMaps[orderId].marker.setLatLng(coords);
+    activeMaps[orderId].map.panTo(coords, { animate: true, duration: 1.0 });
+  } else {
+    // Create new Map
+    const map = L.map(`map-${orderId}`).setView(coords, 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const marker = L.marker(coords).addTo(map)
+      .bindPopup('Your driver is here!')
+      .openPopup();
+
+    activeMaps[orderId] = { map, marker };
   }
 }
-// Run stats fetch on load
-fetchPlatformStats(); 
 
-// Fetch orders straight from Firebase
-async function fetchLiveOrdersFromFirebase(user) {
+// Live Firebase Firestore Listener
+function listenToLiveOrdersFromFirebase(user) {
   const ordersContainer = $('userOrdersContainer');
-  if (!ordersContainer) return;
+  if (!ordersContainer || !user) return;
 
-  if (!user) {
-    ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
-    return;
-  }
+  const q = query(collection(db, 'orders'), where('userId', '==', user.uid));
 
-  try {
-    const q = query(collection(db, 'orders'), where('userId', '==', user.uid));
-    const snap = await getDocs(q);
-    
+  onSnapshot(q, (snap) => {
     let orders = [];
-    snap.forEach(doc => {
-      orders.push({ id: doc.id, ...doc.data() });
-    });
+    snap.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
 
     orders.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
 
@@ -83,27 +109,41 @@ async function fetchLiveOrdersFromFirebase(user) {
     }
 
     ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
-  } catch (err) {
-    console.error("Error fetching firebase data:", err);
-    ordersContainer.innerHTML = `<p style="color:var(--stamp);">Couldn't load live order data right now. Try refreshing in a moment.</p>`;
-  }
+
+    // Initialize or update maps for "Out for Delivery" items
+    orders.forEach(order => {
+      if ((order.status || '').toLowerCase() === 'out for delivery' && order.driverLat) {
+        setTimeout(() => updateLiveMap(order.id, order.driverLat, order.driverLng), 100);
+      }
+    });
+  }, (err) => {
+    console.error("Error listening to live orders:", err);
+    ordersContainer.innerHTML = `<p style="color:var(--stamp);">Couldn't load live tracking data.</p>`;
+  });
 }
 
-// Handle real form submission, ImgBB upload, and Firebase saving
+// Fetch Global Platform Statistics
+async function fetchPlatformStats() {
+  try {
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const ordersSnap = await getDocs(collection(db, 'orders'));
+    
+    if($('totalUsersCount')) $('totalUsersCount').textContent = usersSnap.size;
+    if($('totalOrdersCount')) $('totalOrdersCount').textContent = ordersSnap.size;
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+  }
+}
+fetchPlatformStats();
+
+// Form Submission Handler
 const orderForm = $('orderForm');
 if (orderForm) {
   orderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     if (!currentUser) {
       alert("Please sign in to place an order.");
-      window.location.href = 'auth.html';
       return;
-    }
-
-    if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY_HERE") {
-        alert("Developer: Please set your ImgBB API key in index.js!");
-        return;
     }
 
     const fileInput = $('stickerUpload');
@@ -136,19 +176,20 @@ if (orderForm) {
         body: formData
       });
       const imgbbData = await imgbbRes.json();
-
       if (!imgbbData.success) throw new Error("Image upload failed");
-      const imageUrl = imgbbData.data.url;
 
       setStatus('Saving to ledger...', 'is-active');
 
       await addDoc(collection(db, 'orders'), {
         userId: currentUser.uid,
         userEmail: currentUser.email,
-        imageUrl: imageUrl,
+        imageUrl: imgbbData.data.url,
         details: notesInput.value,
         status: 'Packaging',
-        Delivered: '',       
+        Delivered: 'Pending Delivery',
+        driverLat: 28.6139,
+        driverLng: 77.2090,
+        driverSpeed: '0 km/h',
         timestamp: serverTimestamp()
       });
 
@@ -163,8 +204,7 @@ if (orderForm) {
         submitBtn.classList.add('is-done');
         setStatus('Order placed ✓', 'is-done');
         
-        fetchLiveOrdersFromFirebase(currentUser);
-        fetchPlatformStats(); // Update global stats
+        fetchPlatformStats();
         
         setTimeout(() => {
           submitBtn.classList.remove('is-done');
@@ -182,46 +222,42 @@ if (orderForm) {
   });
 }
 
-// ---- AUTH & INIT ----
+// Authentication & Profile Handler
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       const uname = snap.exists() ? snap.data().username : null;
-      const displayUname = uname || user.displayName || 'member';
+      const displayUname = uname || user.displayName || user.email.split('@')[0];
       
       if ($('navUsernameText')) $('navUsernameText').textContent = '@' + displayUname;
-      if ($('navAvatar')) $('navAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'U')}&background=1E2621&color=ECE6D6`;
+      if ($('navAvatar')) $('navAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayUname)}&background=1E2621&color=ECE6D6`;
       if ($('navSignIn')) $('navSignIn').style.display = 'none';
       if ($('navUser')) $('navUser').style.display = 'flex';
       
-      $('navUser').addEventListener('click', () => window.location.href = 'auth.html?settings');
-      
-      // Show Dashboard and set Profile Details
       if ($('dashboardSection')) {
-          $('dashboardSection').style.display = 'block';
-          $('profileDetails').innerHTML = `
-             <strong>Email:</strong> ${user.email} <br/> 
-             <strong>Username:</strong> @${displayUname} <br/>
-             <strong>Account ID:</strong> ${user.uid}
-          `;
+        $('dashboardSection').style.display = 'block';
+        $('profileDetails').innerHTML = `
+           <strong>Email:</strong> ${user.email} <br/> 
+           <strong>Username:</strong> @${displayUname} <br/>
+           <strong>Account ID:</strong> ${user.uid}
+        `;
       }
     } catch (error) {
-      console.error("Error fetching profile metadata:", error);
+      console.error("Error fetching user info:", error);
     }
   } else {
-    if ($('navSignIn')) {
-        $('navSignIn').style.display = 'inline-block';
-        $('navSignIn').addEventListener('click', () => window.location.href = 'auth.html');
-    }
+    if ($('navSignIn')) $('navSignIn').style.display = 'inline-block';
     if ($('navUser')) $('navUser').style.display = 'none';
     if ($('dashboardSection')) $('dashboardSection').style.display = 'none';
+    if ($('userOrdersContainer')) $('userOrdersContainer').innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history and live tracking.</p>`;
   }
 
-  fetchLiveOrdersFromFirebase(user);
+  listenToLiveOrdersFromFirebase(user);
 });
 
+// Navigation Toggle
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
 if (navToggle && navLinks) {
@@ -229,7 +265,4 @@ if (navToggle && navLinks) {
     const open = navLinks.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  navLinks.querySelectorAll('a').forEach(a =>
-    a.addEventListener('click', () => { navLinks.classList.remove('open'); navToggle.setAttribute('aria-expanded', 'false'); })
-  );
 }

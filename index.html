@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="index.css">
+  
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -31,9 +35,10 @@
       <a href="#dashboardSection">Dashboard</a>
       <a href="#placeOrderSection">Order Now</a>
       <a href="#myOrdersSection">My Orders</a>
+      <a href="delivery.html" style="color:var(--stamp);">Driver Portal</a>
     </div>
     <div class="nav-right">
-      <button id="navSignIn" class="btn-primary" style="display:none;">Sign In</button>
+      <button id="navSignIn" class="btn-primary">Sign In</button>
       <div id="navUser" style="display:none; align-items:center; gap:10px;">
         <img id="navAvatar" src="" alt="Your profile picture" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
         <span id="navUsernameText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600;"></span>
@@ -177,12 +182,12 @@
     </form>
   </section>
 
-  <!-- User Orders Section -->
+  <!-- User Orders Section with Live Map Tracker -->
   <section class="section" id="myOrdersSection">
     <div class="sec-head">
       <div class="sec-eyebrow">Account Ledger</div>
-      <h2 class="sec-title">Your <em>Orders</em></h2>
-      <p class="sec-sub">Track active orders tied to your account.</p>
+      <h2 class="sec-title">Your <em>Orders & Live Tracking</em></h2>
+      <p class="sec-sub">Track active orders and real-time driver movements.</p>
     </div>
     <div id="userOrdersContainer" style="font-family:var(--font-mono); font-size:0.9rem; color:var(--ink-muted);">
       <p>Please sign in to view your live order history.</p>
