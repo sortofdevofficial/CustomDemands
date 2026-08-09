@@ -1,4 +1,4 @@
-import { auth, db, googleProvider, signInWithPopup, onAuthStateChanged, collection, query, onSnapshot, doc, updateDoc, serverTimestamp } from './firebase.js';
+import { auth, db, googleProvider, signInWithPopup, onAuthStateChanged, collection, query, onSnapshot, doc, updateDoc, serverTimestamp, deleteField } from './firebase.js';
 
 const $ = id => document.getElementById(id);
 
@@ -65,12 +65,30 @@ window.updateOrderStatus = async (orderId) => {
   const select = document.getElementById(`status-select-${orderId}`);
   if (!select) return;
 
+  const isNowDelivered = select.value === 'Delivered';
+
   try {
+    // If this order was being actively broadcast, stop it before writing the update
+    if (isNowDelivered && activeTrackingOrderId === orderId) {
+      stopGpsBroadcast();
+    }
+
     const orderRef = doc(db, 'orders', orderId);
-    await updateDoc(orderRef, {
+    const update = {
       status: select.value,
-      Delivered: select.value === 'Delivered' ? 'Completed' : 'Pending Delivery'
-    });
+      Delivered: isNowDelivered ? 'Completed' : 'Pending Delivery'
+    };
+
+    // Wipe GPS/tracking data once an order is marked Delivered — no reason to
+    // keep broadcasting or storing a driver's last known location after that.
+    if (isNowDelivered) {
+      update.driverLat = deleteField();
+      update.driverLng = deleteField();
+      update.driverSpeed = deleteField();
+      update.lastGpsUpdate = deleteField();
+    }
+
+    await updateDoc(orderRef, update);
     alert(`Status updated to ${select.value}`);
   } catch (err) {
     console.error("Error updating status:", err);

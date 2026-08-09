@@ -106,7 +106,7 @@ async function saveNewUsername() {
   }
 }
 
-function fillSettings(user, data) {
+async function fillSettings(user, data) {
   const u = data.username || user.displayName || 'user';
   $('spAvatar').src = avatarURL(user);
   $('spUsername').textContent = '@' + u;
@@ -117,6 +117,26 @@ function fillSettings(user, data) {
   $('settingsAddress').value = data.address || '';
   
   $('sError').textContent = ''; $('sSuccess').textContent = '';
+
+  // Account record: member since + total orders placed by this account
+  if ($('spCreatedAt')) {
+    if (data.createdAt) {
+      const d = new Date(data.createdAt);
+      $('spCreatedAt').textContent = isNaN(d) ? 'Unknown' : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+    } else {
+      $('spCreatedAt').textContent = 'Unknown';
+    }
+  }
+  if ($('spTotalOrders')) {
+    $('spTotalOrders').textContent = '…';
+    try {
+      const ordersSnap = await getDocs(query(collection(db, 'orders'), where('userId', '==', user.uid)));
+      $('spTotalOrders').textContent = ordersSnap.size;
+    } catch (e) {
+      console.error('Error counting orders for account:', e);
+      $('spTotalOrders').textContent = '—';
+    }
+  }
 }
 
 if ($('btnSaveSettings')) $('btnSaveSettings').addEventListener('click', saveSettings);

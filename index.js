@@ -228,7 +228,8 @@ onAuthStateChanged(auth, async user => {
   if (user) {
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
-      const uname = snap.exists() ? snap.data().username : null;
+      const userData = snap.exists() ? snap.data() : null;
+      const uname = userData ? userData.username : null;
       const displayUname = uname || user.displayName || user.email.split('@')[0];
       
       if ($('navUsernameText')) $('navUsernameText').textContent = '@' + displayUname;
@@ -238,10 +239,32 @@ onAuthStateChanged(auth, async user => {
       
       if ($('dashboardSection')) {
         $('dashboardSection').style.display = 'block';
+
+        // Account created date
+        let createdText = 'Unknown';
+        if (userData && userData.createdAt) {
+          const createdDate = new Date(userData.createdAt);
+          if (!isNaN(createdDate)) {
+            createdText = createdDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+          }
+        }
+
+        // Total orders placed by THIS account
+        let myOrdersCount = '…';
+        try {
+          const myOrdersSnap = await getDocs(query(collection(db, 'orders'), where('userId', '==', user.uid)));
+          myOrdersCount = myOrdersSnap.size;
+        } catch (e) {
+          console.error("Error counting user's orders:", e);
+          myOrdersCount = '—';
+        }
+
         $('profileDetails').innerHTML = `
            <strong>Email:</strong> ${user.email} <br/> 
            <strong>Username:</strong> @${displayUname} <br/>
-           <strong>Account ID:</strong> ${user.uid}
+           <strong>Account ID:</strong> ${user.uid} <br/>
+           <strong>Member Since:</strong> ${createdText} <br/>
+           <strong>Total Orders (this account):</strong> ${myOrdersCount}
         `;
       }
     } catch (error) {

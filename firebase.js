@@ -19,7 +19,8 @@ import {
   getDocs,
   onSnapshot,
   serverTimestamp,
-  addDoc
+  addDoc,
+  deleteField
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -59,5 +60,6 @@ export {
   getDocs,
   onSnapshot,
   serverTimestamp,
-  addDoc
+  addDoc,
+  deleteField
 };

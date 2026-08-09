@@ -3,8 +3,10 @@
 
 @import url('index.css');
 
+body { background-color: var(--paper-dark); }
+
 .sec-head {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 /* Enhanced Driver Grid */
@@ -14,14 +16,16 @@
 }
 
 #driverOrdersContainer .order-card {
-  border-width: 2px;
+  border-width: 1.5px;
   border-radius: var(--radius-sm);
-  background: #fff;
-  transition: box-shadow 0.2s ease;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 #driverOrdersContainer .order-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
 }
 
 /* Driver Specific Form Controls */
@@ -36,10 +40,16 @@ select.ainput {
 
 #driverStatusCard {
   border-color: var(--ink);
-  box-shadow: 4px 4px 0px var(--border-dark);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
 }
 
 #driverStatusCard .order-header {
   font-size: 1rem;
   border-bottom-color: var(--ink-muted);
+}
+
+#driverOrdersContainer .btn-secondary,
+#driverOrdersContainer .btn-primary {
+  border-radius: var(--radius-xs);
 }
