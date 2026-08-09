@@ -28,6 +28,7 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#categories">Catalog</a>
+      <a href="#dashboardSection">Dashboard</a>
       <a href="#placeOrderSection">Order Now</a>
       <a href="#myOrdersSection">My Orders</a>
     </div>
@@ -82,6 +83,35 @@
       </div>
     </div>
   </header>
+
+  <!-- Dashboard Section (Profile & Stats) -->
+  <section class="section bg-surface" id="dashboardSection" style="display: none;">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Your Hub</div>
+      <h2 class="sec-title">Dashboard & <em>Stats</em></h2>
+    </div>
+    <div class="ledger">
+      <div class="ledger-row">
+        <span class="ledger-num">01</span>
+        <div class="ledger-main">
+          <h3>Your Profile</h3>
+          <p id="profileDetails" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--ink);">Loading profile...</p>
+        </div>
+        <span class="ledger-tag">Active User</span>
+      </div>
+      <div class="ledger-row">
+        <span class="ledger-num">02</span>
+        <div class="ledger-main">
+          <h3>Platform Live Stats</h3>
+          <p style="font-family:var(--font-mono); color:var(--ink-muted);">
+            Total Users Signed Up: <strong id="totalUsersCount" style="color:var(--ink); font-size:1.1rem;">...</strong> <br/>
+            Total Orders Placed: <strong id="totalOrdersCount" style="color:var(--ink); font-size:1.1rem;">...</strong>
+          </p>
+        </div>
+        <span class="ledger-tag">Live Data</span>
+      </div>
+    </div>
+  </section>
 
   <!-- Categories -->
   <section class="section" id="categories">
