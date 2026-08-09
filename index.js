@@ -8,10 +8,9 @@ const IMGBB_API_KEY = "c98dd32e4c593b29c792c38630d3e10a";
 let currentUser = null;
 
 function renderOrderCard(d) {
-  const rawStatus = (d.status || 'Pending').toString();
+  const rawStatus = (d.status || 'Packaging').toString();
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
   const imgUrl = d.imageUrl;
-  const orderId = d.id ? d.id.slice(0, 6).toUpperCase() : 'N/A';
 
   const imageHTML = imgUrl
     ? `<div class="order-img-wrap">
@@ -23,17 +22,20 @@ function renderOrderCard(d) {
   // Handle Firebase Timestamps properly
   const timestamp = d.timestamp ? (d.timestamp.toDate ? d.timestamp.toDate() : new Date(d.timestamp)) : null;
   const dateText = timestamp && !isNaN(timestamp) ? timestamp.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently';
+  
+  // Handle custom Delivery text
+  const deliveredText = d.Delivered ? d.Delivered : 'Pending Delivery';
 
   return `
     <div class="order-card">
       <div class="order-header">
-        <strong>ID: ${orderId}</strong>
+        <strong>Submitted: ${dateText}</strong>
         <span class="order-status ${statusClass}">${rawStatus}</span>
       </div>
       ${imageHTML}
       <div class="order-body">
         <p><strong>Details</strong> ${d.details || 'Custom sticker'}</p>
-        <p><strong>Submitted</strong> ${dateText}</p>
+        <p><strong>Delivered</strong> ${deliveredText}</p>
       </div>
     </div>
   `;
@@ -135,7 +137,8 @@ if (orderForm) {
         userEmail: currentUser.email,
         imageUrl: imageUrl,
         details: notesInput.value,
-        status: 'Pending',
+        status: 'Packaging', // New Default Status
+        Delivered: '',       // Admin will edit this manually later
         timestamp: serverTimestamp()
       });
 
@@ -149,7 +152,7 @@ if (orderForm) {
       setTimeout(() => {
         submitBtn.classList.remove('is-animating');
         submitBtn.classList.add('is-done');
-        setStatus('Delivered! Order placed ✓', 'is-done');
+        setStatus('Order placed ✓', 'is-done');
         
         // Refresh Orders Grid
         fetchLiveOrdersFromFirebase(currentUser);
