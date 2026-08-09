@@ -521,6 +521,17 @@ button { font: inherit; }
   .hero-title { letter-spacing: -0.8px; }
   .btn-primary.lg, .btn-secondary.lg { padding: 13px 22px; font-size: 0.95rem; }
 }
+.truck-btn-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; }
+.tb-status {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  min-height: 1.2em;
+  transition: color 0.2s ease;
+}
+.tb-status.is-active { color: var(--brass); }
+.tb-status.is-done { color: var(--thread); font-weight: 600; }
+
 /* Dispatch showcase — a larger stage for the truck button */
 .truck-showcase {
   display: flex;

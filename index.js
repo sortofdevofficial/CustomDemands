@@ -104,14 +104,25 @@ async function fetchLiveOrdersFromSheet(user) {
 }
 
 // ---- TRUCK DELIVERY BUTTON ----
-// Click plays a "box gets loaded → truck drives off → delivered ✓" animation.
-// The link still opens in a new tab as normal; this is just the flourish.
+// Click plays a "box gets loaded → truck drives off → delivered ✓" animation,
+// with status text narrating each stage (mirrors the visual timing below).
 
 document.querySelectorAll('.truck-btn').forEach(btn => {
   let resetTimer = null;
+  const timers = [];
+  const statusEl = btn.parentElement && btn.parentElement.querySelector('.tb-status');
+
+  const setStatus = (text, mode) => {
+    if (!statusEl) return;
+    statusEl.textContent = text;
+    statusEl.classList.remove('is-active', 'is-done');
+    if (mode) statusEl.classList.add(mode);
+  };
 
   btn.addEventListener('click', () => {
     clearTimeout(resetTimer);
+    timers.forEach(clearTimeout);
+    timers.length = 0;
     btn.classList.remove('is-done');
 
     // Restart the CSS animation cleanly even if it's already mid-run.
@@ -125,12 +136,21 @@ document.querySelectorAll('.truck-btn').forEach(btn => {
     if (box) box.style.animation = '';
     btn.classList.add('is-animating');
 
-    // Truck animation runs ~2.25s (0.55s delay + 1.7s drive) before it's "delivered".
+    // Timings mirror the CSS: box loads over ~0.6s, truck departs at 0.55s
+    // and drives for 1.7s (done around 2.25s total).
+    setStatus('Packing your sticker order…', 'is-active');
+    timers.push(setTimeout(() => setStatus('Truck loaded — heading out…', 'is-active'), 650));
+    timers.push(setTimeout(() => setStatus('On the way to your doorstep…', 'is-active'), 1400));
+
     resetTimer = setTimeout(() => {
       btn.classList.remove('is-animating');
       btn.classList.add('is-done');
+      setStatus('Delivered! Order placed ✓', 'is-done');
       // Hold the success state a moment, then reset so it can be replayed.
-      resetTimer = setTimeout(() => btn.classList.remove('is-done'), 2200);
+      resetTimer = setTimeout(() => {
+        btn.classList.remove('is-done');
+        setStatus('Ready to dispatch');
+      }, 2200);
     }, 2250);
   });
 });
