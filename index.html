@@ -28,8 +28,8 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#categories">Catalog</a>
+      <a href="#placeOrderSection">Order Now</a>
       <a href="#myOrdersSection">My Orders</a>
-      <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
     </div>
     <div class="nav-right">
       <button id="navSignIn" class="btn-primary" style="display:none;">Sign In</button>
@@ -48,31 +48,10 @@
       <p class="hero-sub">We are currently exclusively selling custom stickers for ₹10! Delivery is a flat ₹10, available only in New Delhi, Rajapuri, and Om Vihar.</p>
 
       <div class="hero-btns">
-        <div class="truck-btn-wrap">
-          <button type="button" class="btn-primary lg truck-btn">
-            <span class="tb-label">
-              <span class="tb-text tb-default">Order Your Stickers</span>
-              <span class="tb-text tb-success">
-                Order Placed
-                <svg class="tb-check" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg>
-              </span>
-            </span>
-            <span class="tb-lane">
-              <span class="tb-progress"></span>
-              <span class="tb-box"></span>
-              <span class="tb-truck">
-                <span class="tb-cargo"></span>
-                <span class="tb-cab"><span class="tb-window"></span></span>
-                <span class="tb-wheel tb-wheel-1"></span>
-                <span class="tb-wheel tb-wheel-2"></span>
-              </span>
-            </span>
-          </button>
-          <p class="tb-status" aria-live="polite">Ready to dispatch</p>
-        </div>
+        <a href="#placeOrderSection" class="btn-primary lg">Order Your Stickers</a>
         <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener" class="btn-secondary lg">Join WhatsApp Channel</a>
       </div>
-      <div class="hero-note">⚡ Total Orders System Wide: <strong id="totalOrdersCount" class="is-loading">Loading…</strong></div>
+      <div class="hero-note">⚡ Quick, local delivery via our specialized protocol.</div>
     </div>
 
     <!-- Docket ticket -->
@@ -124,31 +103,29 @@
     </div>
   </section>
 
-  <!-- User Orders Section -->
-  <section class="section bg-surface" id="myOrdersSection">
-    <div class="sec-head">
-      <div class="sec-eyebrow">Account Ledger</div>
-      <h2 class="sec-title">Your <em>Orders</em></h2>
-      <p class="sec-sub">Track active orders tied to your account.</p>
-    </div>
-    <div id="userOrdersContainer" style="font-family:var(--font-mono); font-size:0.9rem; color:var(--ink-muted);">
-      <p>Please sign in to view your live order history.</p>
-    </div>
-  </section>
-
-  <!-- Order Dispatch Showcase -->
-  <section class="section" id="dispatchDemo">
+  <!-- Real Dispatch Form -->
+  <section class="section bg-surface" id="placeOrderSection">
     <div class="sec-head center">
       <div class="sec-eyebrow">Workshop Dispatch</div>
-      <h2 class="sec-title">Watch your order <em>ship out</em></h2>
-      <p class="sec-sub">This is exactly what happens when you place a real order — click it.</p>
+      <h2 class="sec-title">Place your <em>Order</em></h2>
+      <p class="sec-sub">Upload your sticker design, and we'll start processing immediately.</p>
     </div>
 
-    <div class="truck-showcase">
-      <div class="truck-btn-wrap">
-        <button type="button" class="btn-primary xl truck-btn">
+    <form id="orderForm" class="form-wrap">
+      <div class="afield">
+        <label for="stickerUpload">Upload Design (Image)</label>
+        <input type="file" id="stickerUpload" accept="image/*" required class="ainput" />
+      </div>
+      
+      <div class="afield">
+        <label for="orderNotes">Order Details (Size, Quantity, etc.)</label>
+        <textarea id="orderNotes" class="ainput" placeholder="e.g. 5 copies, glossy finish" rows="3" required></textarea>
+      </div>
+
+      <div class="truck-btn-wrap" style="align-items: center; margin-top: 10px;">
+        <button type="submit" class="truck-btn" id="submitOrderBtn">
           <span class="tb-label">
-            <span class="tb-text tb-default">Dispatch My Order</span>
+            <span class="tb-text tb-default">Submit Order</span>
             <span class="tb-text tb-success">
               Order Placed
               <svg class="tb-check" viewBox="0 0 12 10"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg>
@@ -165,8 +142,20 @@
             </span>
           </span>
         </button>
-        <p class="tb-status" aria-live="polite">Ready to dispatch</p>
+        <p class="tb-status" id="orderStatusText" aria-live="polite"></p>
       </div>
+    </form>
+  </section>
+
+  <!-- User Orders Section -->
+  <section class="section" id="myOrdersSection">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Account Ledger</div>
+      <h2 class="sec-title">Your <em>Orders</em></h2>
+      <p class="sec-sub">Track active orders tied to your account.</p>
+    </div>
+    <div id="userOrdersContainer" style="font-family:var(--font-mono); font-size:0.9rem; color:var(--ink-muted);">
+      <p>Please sign in to view your live order history.</p>
     </div>
   </section>
 

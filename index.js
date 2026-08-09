@@ -1,34 +1,17 @@
-import { auth, db, onAuthStateChanged, doc, getDoc } from './firebase.js';
+import { auth, db, onAuthStateChanged, doc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from './firebase.js';
 
 const $ = id => document.getElementById(id);
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz7pUUSJoM3ChTZNdMEE5XydZaBMEew3yFt2OHaWXxbcN9ekE14Nr5gZtDVqnCl8vmy/exec";
+
+// Replace with your actual ImgBB API Key
+const IMGBB_API_KEY = "c98dd32e4c593b29c792c38630d3e10a"; 
 
 let currentUser = null;
 
-function setTotalOrders(state, count) {
-  const el = $('totalOrdersCount');
-  if (!el) return;
-  el.classList.remove('is-loading', 'is-error');
-  if (state === 'loading') { el.textContent = 'Loading…'; el.classList.add('is-loading'); }
-  else if (state === 'error') { el.textContent = 'Unavailable'; el.classList.add('is-error'); }
-  else { el.textContent = `${count}`; }
-}
-
-function extractImageUrl(raw) {
-  if (!raw) return null;
-  let driveId = null;
-  if (raw.includes('id=')) driveId = raw.split('id=')[1].split('&')[0];
-  else if (raw.includes('/d/')) driveId = raw.split('/d/')[1].split('/')[0];
-  if (driveId) return `https://lh3.googleusercontent.com/d/${driveId}`;
-  if (raw.startsWith('http')) return raw.split(',')[0].trim();
-  return null;
-}
-
 function renderOrderCard(d) {
-  const rawStatus = (d["order status"] || d["status"] || 'Pending').toString();
+  const rawStatus = (d.status || 'Pending').toString();
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
-  const imgUrl = extractImageUrl(d["upload design"] || d["upload image"] || null);
-  const orderId = d["order id"] || 'N/A';
+  const imgUrl = d.imageUrl;
+  const orderId = d.id ? d.id.slice(0, 6).toUpperCase() : 'N/A';
 
   const imageHTML = imgUrl
     ? `<div class="order-img-wrap">
@@ -37,7 +20,8 @@ function renderOrderCard(d) {
        </div>`
     : '';
 
-  const timestamp = d["timestamp"] ? new Date(d["timestamp"]) : null;
+  // Handle Firebase Timestamps properly
+  const timestamp = d.timestamp ? (d.timestamp.toDate ? d.timestamp.toDate() : new Date(d.timestamp)) : null;
   const dateText = timestamp && !isNaN(timestamp) ? timestamp.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently';
 
   return `
@@ -48,110 +32,146 @@ function renderOrderCard(d) {
       </div>
       ${imageHTML}
       <div class="order-body">
-        <p><strong>Details</strong> ${d["order details"] || 'Custom sticker'}</p>
+        <p><strong>Details</strong> ${d.details || 'Custom sticker'}</p>
         <p><strong>Submitted</strong> ${dateText}</p>
       </div>
     </div>
   `;
 }
 
-async function fetchLiveOrdersFromSheet(user) {
+// Fetch orders straight from Firebase
+async function fetchLiveOrdersFromFirebase(user) {
   const ordersContainer = $('userOrdersContainer');
-  setTotalOrders('loading');
-
-  if (!user) {
-    if (ordersContainer) ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
-    setTotalOrders('error');
-    return;
-  }
-
-  let orders = [];
-  try {
-    const fetchUrl = `${GOOGLE_SHEET_API_URL}?email=${encodeURIComponent(user.email)}`;
-    const response = await fetch(fetchUrl, { cache: 'no-store' });
-    
-    if (!response.ok) throw new Error(`Sheet responded with ${response.status}`);
-    const result = await response.json();
-    
-    if (result.data) {
-        orders = result.data;
-        setTotalOrders('ok', result.totalSystemOrders);
-    } else {
-        throw new Error('Unexpected response shape from order sheet');
-    }
-  } catch (err) {
-    console.error("Error fetching sheet data:", err);
-    setTotalOrders('error');
-    if (ordersContainer) {
-      ordersContainer.innerHTML = `<p style="color:var(--stamp);">Couldn't load live order data right now. Try refreshing in a moment.</p>`;
-    }
-    return;
-  }
-
   if (!ordersContainer) return;
 
-  if (orders.length === 0) {
-    ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong> yet.</p>`;
+  if (!user) {
+    ordersContainer.innerHTML = `<p style="color:var(--ink-faint);">Sign in to see your order history here.</p>`;
     return;
   }
 
-  ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
+  try {
+    const q = query(collection(db, 'orders'), where('userId', '==', user.uid));
+    const snap = await getDocs(q);
+    
+    let orders = [];
+    snap.forEach(doc => {
+      orders.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Sort descending by timestamp
+    orders.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+    if (orders.length === 0) {
+      ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong> yet.</p>`;
+      return;
+    }
+
+    ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
+  } catch (err) {
+    console.error("Error fetching firebase data:", err);
+    ordersContainer.innerHTML = `<p style="color:var(--stamp);">Couldn't load live order data right now. Try refreshing in a moment.</p>`;
+  }
 }
 
-// ---- TRUCK DELIVERY BUTTON ----
-// Click plays a "box gets loaded → truck drives off → delivered ✓" animation,
-// with status text narrating each stage (mirrors the visual timing below).
+// Handle real form submission, ImgBB upload, and Firebase saving
+const orderForm = $('orderForm');
+if (orderForm) {
+  orderForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) {
+      alert("Please sign in to place an order.");
+      window.location.href = 'auth.html';
+      return;
+    }
 
-document.querySelectorAll('.truck-btn').forEach(btn => {
-  let resetTimer = null;
-  const timers = [];
-  const statusEl = btn.parentElement && btn.parentElement.querySelector('.tb-status');
+    if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY_HERE") {
+        alert("Developer: Please set your ImgBB API key in index.js!");
+        return;
+    }
 
-  const setStatus = (text, mode) => {
-    if (!statusEl) return;
-    statusEl.textContent = text;
-    statusEl.classList.remove('is-active', 'is-done');
-    if (mode) statusEl.classList.add(mode);
-  };
+    const fileInput = $('stickerUpload');
+    const notesInput = $('orderNotes');
+    const file = fileInput.files[0];
+    if (!file) return;
 
-  btn.addEventListener('click', () => {
-    clearTimeout(resetTimer);
-    timers.forEach(clearTimeout);
-    timers.length = 0;
-    btn.classList.remove('is-done');
+    const submitBtn = $('submitOrderBtn');
+    const statusEl = $('orderStatusText');
 
-    // Restart the CSS animation cleanly even if it's already mid-run.
-    const truck = btn.querySelector('.tb-truck');
-    const box = btn.querySelector('.tb-box');
-    btn.classList.remove('is-animating');
-    if (truck) truck.style.animation = 'none';
-    if (box) box.style.animation = 'none';
-    void btn.offsetWidth; // force reflow so the animation restarts
-    if (truck) truck.style.animation = '';
-    if (box) box.style.animation = '';
-    btn.classList.add('is-animating');
+    const setStatus = (text, mode) => {
+      if (!statusEl) return;
+      statusEl.textContent = text;
+      statusEl.className = 'tb-status';
+      if (mode) statusEl.classList.add(mode);
+    };
 
-    // Timings mirror the CSS: box loads over ~0.6s, truck departs at 0.55s
-    // and drives for 1.7s (done around 2.25s total).
-    setStatus('Packing your sticker order…', 'is-active');
-    timers.push(setTimeout(() => setStatus('Truck loaded — heading out…', 'is-active'), 650));
-    timers.push(setTimeout(() => setStatus('On the way to your doorstep…', 'is-active'), 1400));
+    submitBtn.disabled = true;
+    
+    // START: Reset truck state
+    submitBtn.classList.remove('is-done', 'is-animating');
+    void submitBtn.offsetWidth; // trigger reflow
+    
+    try {
+      setStatus('Uploading design...', 'is-active');
 
-    resetTimer = setTimeout(() => {
-      btn.classList.remove('is-animating');
-      btn.classList.add('is-done');
-      setStatus('Delivered! Order placed ✓', 'is-done');
-      // Hold the success state a moment, then reset so it can be replayed.
-      resetTimer = setTimeout(() => {
-        btn.classList.remove('is-done');
-        setStatus('Ready to dispatch');
-      }, 2200);
-    }, 2250);
+      // 1. Upload to ImgBB
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+      });
+      const imgbbData = await imgbbRes.json();
+
+      if (!imgbbData.success) throw new Error("Image upload failed");
+      const imageUrl = imgbbData.data.url;
+
+      setStatus('Saving to ledger...', 'is-active');
+
+      // 2. Save order to Firebase Firestore
+      await addDoc(collection(db, 'orders'), {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        imageUrl: imageUrl,
+        details: notesInput.value,
+        status: 'Pending',
+        timestamp: serverTimestamp()
+      });
+
+      // 3. Play Success Truck Animation
+      submitBtn.classList.add('is-animating');
+      setStatus('Packing your sticker order…', 'is-active');
+      
+      setTimeout(() => setStatus('Truck loaded — heading out…', 'is-active'), 650);
+      setTimeout(() => setStatus('On the way to our workshop…', 'is-active'), 1400);
+
+      setTimeout(() => {
+        submitBtn.classList.remove('is-animating');
+        submitBtn.classList.add('is-done');
+        setStatus('Delivered! Order placed ✓', 'is-done');
+        
+        // Refresh Orders Grid
+        fetchLiveOrdersFromFirebase(currentUser);
+        
+        // Reset the form after success
+        setTimeout(() => {
+          submitBtn.classList.remove('is-done');
+          submitBtn.disabled = false;
+          orderForm.reset();
+          setStatus('');
+        }, 3000);
+      }, 2250);
+
+    } catch (error) {
+      console.error("Order error:", error);
+      setStatus('Failed to dispatch order. Try again.', 'is-error');
+      submitBtn.disabled = false;
+    }
   });
-});
+}
 
 // ---- AUTH & INIT ----
-
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
@@ -162,19 +182,24 @@ onAuthStateChanged(auth, async user => {
       if ($('navAvatar')) $('navAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'U')}&background=1E2621&color=ECE6D6`;
       if ($('navSignIn')) $('navSignIn').style.display = 'none';
       if ($('navUser')) $('navUser').style.display = 'flex';
+      
+      // Go to profile on click
+      $('navUser').addEventListener('click', () => window.location.href = 'auth.html?settings');
     } catch (error) {
       console.error("Error fetching profile metadata:", error);
     }
   } else {
-    if ($('navSignIn')) $('navSignIn').style.display = 'inline-block';
+    if ($('navSignIn')) {
+        $('navSignIn').style.display = 'inline-block';
+        $('navSignIn').addEventListener('click', () => window.location.href = 'auth.html');
+    }
     if ($('navUser')) $('navUser').style.display = 'none';
   }
 
-  fetchLiveOrdersFromSheet(user);
+  fetchLiveOrdersFromFirebase(user);
 });
 
-setInterval(() => fetchLiveOrdersFromSheet(currentUser), 60000);
-
+// Mobile Nav Toggle
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
 if (navToggle && navLinks) {
