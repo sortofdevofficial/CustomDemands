@@ -219,13 +219,99 @@ a { color: inherit; }
 .ainput:focus { outline: none; border-color: var(--ink); background: var(--surface); }
 
 /* Truck Button (Simplified Base) */
-.truck-btn { width: 100%; padding: 17px; background: var(--ink); color: var(--paper); border: none; font-family: var(--font-mono); font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 999px; margin-bottom: 10px; transition: background 0.2s ease, transform 0.15s ease; }
+.truck-btn {
+  width: 100%; padding: 17px; background: var(--ink); color: var(--paper); border: none;
+  font-family: var(--font-mono); font-size: 1rem; font-weight: bold; cursor: pointer;
+  border-radius: 999px; margin-bottom: 10px; transition: background 0.2s ease, transform 0.15s ease;
+  position: relative; overflow: hidden; isolation: isolate; min-height: 54px;
+}
 .truck-btn:hover:not(:disabled) { background: var(--stamp); }
 .truck-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.tb-label {
+  position: relative; z-index: 3; display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; width: 100%; transition: opacity 0.15s ease;
+}
+.tb-text { display: inline-flex; align-items: center; gap: 7px; }
+.tb-text.tb-success { display: none; }
+.truck-btn.is-done .tb-text.tb-default { display: none; }
+.truck-btn.is-done .tb-text.tb-success { display: inline-flex; }
+.truck-btn.is-animating .tb-label { opacity: 0; }
+
+.tb-check { width: 13px; height: 11px; color: var(--paper); }
+.tb-check polyline {
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 22; stroke-dashoffset: 22; animation: tb-draw-check 0.35s ease forwards 0.05s;
+}
+@keyframes tb-draw-check { to { stroke-dashoffset: 0; } }
+
+/* Road lane: progress fill + moving dashes, hidden until animating */
+.tb-lane {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.truck-btn.is-animating .tb-lane, .truck-btn.is-done .tb-lane { opacity: 1; }
+
+.tb-progress {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0%; z-index: 1;
+  background: linear-gradient(90deg, var(--thread-dark), var(--thread));
+}
+.truck-btn.is-animating .tb-progress { animation: tb-fill 2.1s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+.truck-btn.is-done .tb-progress { width: 100%; }
+@keyframes tb-fill { to { width: 100%; } }
+
+/* Dashed road-line racing past underneath the truck for a "speed" feel */
+.tb-lane::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 7px; height: 2px; z-index: 1;
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 10px, transparent 10px 22px);
+  opacity: 0;
+}
+.truck-btn.is-animating .tb-lane::after { opacity: 0.7; animation: tb-road 0.28s linear infinite; }
+@keyframes tb-road { from { background-position-x: 0; } to { background-position-x: -32px; } }
+
+/* Delivery destination marker the truck races toward */
+.tb-box {
+  position: absolute; bottom: 9px; right: 16px; width: 13px; height: 13px; z-index: 1;
+  border: 2px solid rgba(255,255,255,0.55); border-radius: 3px; opacity: 0;
+}
+.truck-btn.is-animating .tb-box { opacity: 1; animation: tb-box-pulse 0.5s ease-in-out infinite alternate; }
+@keyframes tb-box-pulse { to { opacity: 0.4; } }
+
+/* The truck itself, built from little div "pixels" — races left to right, FAST */
+.tb-truck {
+  position: absolute; bottom: 6px; left: -22%; z-index: 2; width: 46px; height: 22px; opacity: 0;
+}
+.truck-btn.is-animating .tb-truck {
+  opacity: 1; animation: tb-drive 2.1s cubic-bezier(0.5, 0, 0.25, 1) forwards;
+}
+.truck-btn.is-done .tb-truck { opacity: 0; transition: opacity 0.2s ease; }
+@keyframes tb-drive {
+  0%   { left: -22%; transform: scaleX(1); }
+  78%  { left: 92%; transform: scaleX(1); }
+  92%  { left: 104%; transform: scaleX(1.12); } /* slight speed-stretch as it zooms off */
+  100% { left: 126%; transform: scaleX(1); }
+}
+
+.tb-cargo { position: absolute; left: 0; bottom: 6px; width: 27px; height: 15px; background: var(--paper); border-radius: 2px 2px 0 0; }
+.tb-cab { position: absolute; right: 0; bottom: 6px; width: 16px; height: 11px; background: var(--paper); border-radius: 2px 5px 0 0; }
+.tb-window { position: absolute; top: 1px; right: 2px; width: 7px; height: 5px; background: var(--thread-dark); border-radius: 1px; }
+.tb-wheel {
+  position: absolute; bottom: 0; width: 8px; height: 8px; background: var(--ink);
+  border: 2px solid var(--paper); border-radius: 50%; animation: tb-spin 0.22s linear infinite;
+}
+.tb-wheel-1 { left: 5px; }
+.tb-wheel-2 { right: 5px; }
+@keyframes tb-spin { to { transform: rotate(360deg); } }
+
 .tb-status { font-family: var(--font-mono); font-size: 0.8rem; text-align: center; color: var(--ink-muted); min-height: 20px; }
 .tb-status.is-active { color: var(--thread-dark); }
-.tb-status.is-done { color: var(--stamp); }
+.tb-status.is-done { color: var(--stamp); font-weight: 600; }
 .tb-status.is-error { color: var(--stamp-dark); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-truck, .tb-progress, .tb-lane::after, .tb-wheel { animation: none !important; }
+  .truck-btn.is-animating .tb-truck { left: 40%; opacity: 1; }
+}
 
 /* Footer */
 .footer { padding: 64px var(--edge) 26px; background: var(--ink); color: var(--paper); }

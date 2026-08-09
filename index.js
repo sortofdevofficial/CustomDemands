@@ -196,13 +196,13 @@ if (orderForm) {
       submitBtn.classList.add('is-animating');
       setStatus('Packing your sticker order…', 'is-active');
       
-      setTimeout(() => setStatus('Truck loaded — heading out…', 'is-active'), 650);
-      setTimeout(() => setStatus('On the way to our workshop…', 'is-active'), 1400);
+      setTimeout(() => setStatus('Truck loaded — heading out…', 'is-active'), 600);
+      setTimeout(() => setStatus('Racing to the workshop…', 'is-active'), 1300);
 
       setTimeout(() => {
         submitBtn.classList.remove('is-animating');
         submitBtn.classList.add('is-done');
-        setStatus('Order placed ✓', 'is-done');
+        setStatus('Order submitted ✓ — give us ~1 day, then track your driver live below', 'is-done');
         
         fetchPlatformStats();
         
@@ -211,8 +211,8 @@ if (orderForm) {
           submitBtn.disabled = false;
           orderForm.reset();
           setStatus('');
-        }, 3000);
-      }, 2250);
+        }, 4500);
+      }, 2150);
 
     } catch (error) {
       console.error("Order error:", error);
