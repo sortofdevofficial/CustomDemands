@@ -28,8 +28,6 @@ function renderOrderCard(d) {
   const rawStatus = (d["order status"] || d["status"] || 'Pending').toString();
   const statusClass = `status-${rawStatus.toLowerCase().replace(/\s+/g, '-')}`;
   const imgUrl = extractImageUrl(d["upload design"] || d["upload image"] || null);
-
-  const editUrl = d["form link"] || "https://forms.gle/cr2yXjXRaYkXe4FDA";
   const orderId = d["order id"] || 'N/A';
 
   const imageHTML = imgUrl
@@ -52,9 +50,6 @@ function renderOrderCard(d) {
       <div class="order-body">
         <p><strong>Details</strong> ${d["order details"] || 'Custom sticker'}</p>
         <p><strong>Submitted</strong> ${dateText}</p>
-        <a href="${editUrl}" target="_blank" rel="noopener" class="btn-secondary" style="margin-top:12px; width:100%; justify-content:center; text-align:center; font-size:0.85rem; padding:8px 14px;">
-          ✏️ Edit Response / Add Photos
-        </a>
       </div>
     </div>
   `;
@@ -96,7 +91,7 @@ async function fetchLiveOrdersFromSheet(user) {
   if (!ordersContainer) return;
 
   if (orders.length === 0) {
-    ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong> yet. Place one through the order form above.</p>`;
+    ordersContainer.innerHTML = `<p style="color:var(--ink-muted);">No sticker orders found for <strong>${user.email}</strong> yet.</p>`;
     return;
   }
 

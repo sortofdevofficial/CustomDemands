@@ -377,6 +377,7 @@ button { font: inherit; }
 
 /* the delivery lane, collapsed by default */
 .tb-lane {
+  display: block;
   position: relative;
   max-height: 0;
   overflow: hidden;
