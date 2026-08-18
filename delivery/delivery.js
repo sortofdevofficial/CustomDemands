@@ -21,11 +21,12 @@ if ($('driverSignInBtn')) {
 
 function renderDriverOrderCard(order) {
   const isTrackingThis = activeTrackingOrderId === order.id;
+  const orderTitle = order.orderNo ? `Order #${order.orderNo}` : `Order ID: ${order.id.slice(0, 8)}`;
 
   return `
     <div class="order-card" id="driver-card-${order.id}">
       <div class="order-header">
-        <strong>Order ID: ${order.id.slice(0, 8)}</strong>
+        <strong>${orderTitle}</strong>
         <span class="order-status status-${(order.status || 'packaging').toLowerCase().replace(/\s+/g, '-')}">${order.status || 'Packaging'}</span>
       </div>
       
@@ -83,6 +84,7 @@ window.updateOrderStatus = async (orderId) => {
       update.driverLng = deleteField();
       update.driverSpeed = deleteField();
       update.lastGpsUpdate = deleteField();
+      update.deliveredTime = serverTimestamp(); 
     }
 
     await updateDoc(orderRef, update);

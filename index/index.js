@@ -9,7 +9,6 @@ const IMGBB_API_KEY = "c98dd32e4c593b29c792c38630d3e10a";
 let currentUser = null;
 let activeMaps = {};
 
-// Handle Sign In button -> redirect to dedicated auth page or popup
 if ($('navSignIn')) {
   $('navSignIn').addEventListener('click', () => {
     window.location.href = '../auth/auth.html';
@@ -32,11 +31,12 @@ function renderOrderCard(d) {
   const dateText = timestamp && !isNaN(timestamp) ? timestamp.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently';
   const deliveredText = d.Delivered ? d.Delivered : 'Pending Delivery';
   const isOutForDelivery = rawStatus.toLowerCase() === 'out for delivery';
+  const orderTitle = d.orderNo ? `Order #${d.orderNo}` : `Order #${d.id.slice(0, 8)}`;
 
   return `
     <div class="order-card" id="card-${d.id}">
       <div class="order-header">
-        <strong>Submitted: ${dateText}</strong>
+        <strong>${orderTitle} | ${dateText}</strong>
         <span class="order-status ${statusClass}">${rawStatus}</span>
       </div>
       ${imageHTML}
@@ -157,7 +157,6 @@ if (orderForm) {
     const fileInput = $('stickerUpload');
     const notesInput = $('orderNotes');
     const file = fileInput.files[0];
-    if (!file) return;
 
     const submitBtn = $('submitOrderBtn');
     const statusEl = $('orderStatusText');
@@ -174,31 +173,40 @@ if (orderForm) {
     void submitBtn.offsetWidth;
     
     try {
-      setStatus('Uploading design...', 'is-active');
+      let finalImageUrl = null;
 
-      const formData = new FormData();
-      formData.append('image', file);
+      if (file) {
+        setStatus('Uploading design...', 'is-active');
+        const formData = new FormData();
+        formData.append('image', file);
 
-      const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: 'POST',
-        body: formData
-      });
-      const imgbbData = await imgbbRes.json();
-      if (!imgbbData.success) throw new Error("Image upload failed");
+        const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formData
+        });
+        const imgbbData = await imgbbRes.json();
+        if (!imgbbData.success) throw new Error("Image upload failed");
+        finalImageUrl = imgbbData.data.url;
+      }
 
       setStatus('Saving to ledger...', 'is-active');
 
+      const ordersSnap = await getDocs(collection(db, 'orders'));
+      const nextOrderNo = ordersSnap.size + 1;
+
       await addDoc(collection(db, 'orders'), {
+        orderNo: nextOrderNo,
         userId: currentUser.uid,
         userEmail: currentUser.email,
-        imageUrl: imgbbData.data.url,
+        imageUrl: finalImageUrl,
         details: notesInput.value,
         status: 'Packaging',
         Delivered: 'Pending Delivery',
         driverLat: 28.6139,
         driverLng: 77.2090,
         driverSpeed: '0 km/h',
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
+        orderSentTime: serverTimestamp() 
       });
 
       submitBtn.classList.add('is-animating');
@@ -210,7 +218,7 @@ if (orderForm) {
       setTimeout(() => {
         submitBtn.classList.remove('is-animating');
         submitBtn.classList.add('is-done');
-        setStatus('Order submitted ✓ — give us ~1 day, then track your driver live below', 'is-done');
+        setStatus(`Order #${nextOrderNo} submitted ✓ — give us ~1 day, then track your driver live below`, 'is-done');
         
         fetchPlatformStats();
         
