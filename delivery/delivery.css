@@ -1,15 +1,10 @@
-/* Inherits base variables by importing or relying on global scope if merged.
-   Assuming standalone, we define necessary specific overrides for driver panel */
-
-@import url('index.css');
+/* Inherits base theme styles from index/index.css */
+@import url('../index/index.css');
 
 body { background-color: var(--paper-dark); }
 
-.sec-head {
-  margin-bottom: 28px;
-}
+.sec-head { margin-bottom: 28px; }
 
-/* Enhanced Driver Grid */
 #driverOrdersContainer .orders-grid {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
@@ -28,7 +23,6 @@ body { background-color: var(--paper-dark); }
   transform: translateY(-3px);
 }
 
-/* Driver Specific Form Controls */
 select.ainput {
   cursor: pointer;
   appearance: none;
@@ -42,11 +36,6 @@ select.ainput {
   border-color: var(--ink);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
-}
-
-#driverStatusCard .order-header {
-  font-size: 1rem;
-  border-bottom-color: var(--ink-muted);
 }
 
 #driverOrdersContainer .btn-secondary,

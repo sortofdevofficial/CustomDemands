@@ -1,20 +1,18 @@
-import { auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, collection, addDoc, query, where, onSnapshot, getDocs, serverTimestamp } from './firebase.js';
+import { 
+  auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, 
+  doc, getDoc, collection, addDoc, query, where, onSnapshot, getDocs, serverTimestamp 
+} from '../firebase.js';
 
 const $ = id => document.getElementById(id);
 const IMGBB_API_KEY = "c98dd32e4c593b29c792c38630d3e10a"; 
 
 let currentUser = null;
-let activeMaps = {}; // Stores map instance and marker per order
+let activeMaps = {};
 
-// Handle Google Sign-In Popup
+// Handle Sign In button -> redirect to dedicated auth page or popup
 if ($('navSignIn')) {
-  $('navSignIn').addEventListener('click', async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (err) {
-      console.error("Sign in error:", err);
-      alert("Sign in failed. Please try again.");
-    }
+  $('navSignIn').addEventListener('click', () => {
+    window.location.href = '../auth/auth.html';
   });
 }
 
@@ -43,8 +41,8 @@ function renderOrderCard(d) {
       </div>
       ${imageHTML}
       <div class="order-body">
-        <p><strong>Details</strong> ${d.details || 'Custom sticker'}</p>
-        <p><strong>Delivered</strong> ${deliveredText}</p>
+        <p><strong>Details:</strong> ${d.details || 'Custom sticker'}</p>
+        <p><strong>Status:</strong> ${deliveredText}</p>
         
         ${isOutForDelivery ? `
           <div class="driver-status-badge">
@@ -63,7 +61,6 @@ function renderOrderCard(d) {
   `;
 }
 
-// Update or Initialize Real-Time Leaflet Map
 function updateLiveMap(orderId, lat, lng) {
   const container = document.getElementById(`map-${orderId}`);
   if (!container || typeof L === 'undefined') return;
@@ -71,11 +68,9 @@ function updateLiveMap(orderId, lat, lng) {
   const coords = [lat || 28.6139, lng || 77.2090];
 
   if (activeMaps[orderId]) {
-    // Smooth movement
     activeMaps[orderId].marker.setLatLng(coords);
     activeMaps[orderId].map.panTo(coords, { animate: true, duration: 1.0 });
   } else {
-    // Create new Map
     const map = L.map(`map-${orderId}`).setView(coords, 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -90,7 +85,6 @@ function updateLiveMap(orderId, lat, lng) {
   }
 }
 
-// Live Firebase Firestore Listener
 function listenToLiveOrdersFromFirebase(user) {
   const ordersContainer = $('userOrdersContainer');
   if (!ordersContainer || !user) return;
@@ -110,7 +104,6 @@ function listenToLiveOrdersFromFirebase(user) {
 
     ordersContainer.innerHTML = `<div class="orders-grid">${orders.map(renderOrderCard).join('')}</div>`;
 
-    // Initialize or update maps for "Out for Delivery" items
     orders.forEach(order => {
       if ((order.status || '').toLowerCase() === 'out for delivery' && order.driverLat) {
         setTimeout(() => updateLiveMap(order.id, order.driverLat, order.driverLng), 100);
@@ -122,7 +115,6 @@ function listenToLiveOrdersFromFirebase(user) {
   });
 }
 
-// Count numbers up smoothly instead of snapping straight to the new value
 const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function animateCount(el, to) {
   if (!el) return;
@@ -139,7 +131,6 @@ function animateCount(el, to) {
   requestAnimationFrame(tick);
 }
 
-// Fetch Global Platform Statistics
 async function fetchPlatformStats() {
   try {
     const usersSnap = await getDocs(collection(db, 'users'));
@@ -153,13 +144,13 @@ async function fetchPlatformStats() {
 }
 fetchPlatformStats();
 
-// Form Submission Handler
 const orderForm = $('orderForm');
 if (orderForm) {
   orderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) {
       alert("Please sign in to place an order.");
+      window.location.href = '../auth/auth.html';
       return;
     }
 
@@ -239,7 +230,6 @@ if (orderForm) {
   });
 }
 
-// Authentication & Profile Handler
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
@@ -257,7 +247,6 @@ onAuthStateChanged(auth, async user => {
       if ($('dashboardSection')) {
         $('dashboardSection').style.display = 'block';
 
-        // Account created date
         let createdText = 'Unknown';
         if (userData && userData.createdAt) {
           const createdDate = new Date(userData.createdAt);
@@ -266,7 +255,6 @@ onAuthStateChanged(auth, async user => {
           }
         }
 
-        // Total orders placed by THIS account
         let myOrdersCount = '…';
         try {
           const myOrdersSnap = await getDocs(query(collection(db, 'orders'), where('userId', '==', user.uid)));
@@ -297,7 +285,6 @@ onAuthStateChanged(auth, async user => {
   listenToLiveOrdersFromFirebase(user);
 });
 
-// Navigation Toggle
 const navToggle = $('navToggle');
 const navLinks = document.querySelector('.nav-links');
 if (navToggle && navLinks) {
@@ -307,7 +294,6 @@ if (navToggle && navLinks) {
   });
 }
 
-// Nav gains a subtle shadow once the page has scrolled
 const navEl = document.querySelector('.nav');
 if (navEl) {
   const onNavScroll = () => navEl.classList.toggle('is-scrolled', window.scrollY > 8);
@@ -315,7 +301,6 @@ if (navEl) {
   window.addEventListener('scroll', onNavScroll, { passive: true });
 }
 
-// Scroll-reveal: sections/ledgers fade + rise into view as the user scrolls
 const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
 if (revealEls.length) {
   if ('IntersectionObserver' in window) {

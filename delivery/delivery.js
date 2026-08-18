@@ -1,11 +1,13 @@
-import { auth, db, googleProvider, signInWithPopup, onAuthStateChanged, collection, query, onSnapshot, doc, updateDoc, serverTimestamp, deleteField } from './firebase.js';
+import { 
+  auth, db, googleProvider, signInWithPopup, onAuthStateChanged, 
+  collection, query, onSnapshot, doc, updateDoc, serverTimestamp, deleteField 
+} from '../firebase.js';
 
 const $ = id => document.getElementById(id);
 
 let activeWatchId = null;
 let activeTrackingOrderId = null;
 
-// Handle Driver Sign-In
 if ($('driverSignInBtn')) {
   $('driverSignInBtn').addEventListener('click', async () => {
     try {
@@ -17,7 +19,6 @@ if ($('driverSignInBtn')) {
   });
 }
 
-// Render Order Card for Driver Portal
 function renderDriverOrderCard(order) {
   const isTrackingThis = activeTrackingOrderId === order.id;
 
@@ -34,8 +35,8 @@ function renderDriverOrderCard(order) {
         </div>` : ''}
 
       <div class="order-body">
-        <p><strong>Details</strong> ${order.details || 'Custom Sticker'}</p>
-        <p><strong>Customer Email</strong> ${order.userEmail || 'N/A'}</p>
+        <p><strong>Details:</strong> ${order.details || 'Custom Sticker'}</p>
+        <p><strong>Customer Email:</strong> ${order.userEmail || 'N/A'}</p>
         
         <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
           <label style="font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase;">Update Status:</label>
@@ -60,7 +61,6 @@ function renderDriverOrderCard(order) {
   `;
 }
 
-// Global scope bindings for inline HTML events
 window.updateOrderStatus = async (orderId) => {
   const select = document.getElementById(`status-select-${orderId}`);
   if (!select) return;
@@ -68,7 +68,6 @@ window.updateOrderStatus = async (orderId) => {
   const isNowDelivered = select.value === 'Delivered';
 
   try {
-    // If this order was being actively broadcast, stop it before writing the update
     if (isNowDelivered && activeTrackingOrderId === orderId) {
       stopGpsBroadcast();
     }
@@ -79,8 +78,6 @@ window.updateOrderStatus = async (orderId) => {
       Delivered: isNowDelivered ? 'Completed' : 'Pending Delivery'
     };
 
-    // Wipe GPS/tracking data once an order is marked Delivered — no reason to
-    // keep broadcasting or storing a driver's last known location after that.
     if (isNowDelivered) {
       update.driverLat = deleteField();
       update.driverLng = deleteField();
@@ -110,7 +107,7 @@ function startGpsBroadcast(orderId) {
     return;
   }
 
-  stopGpsBroadcast(); // Clear any existing tracking session
+  stopGpsBroadcast();
 
   activeTrackingOrderId = orderId;
   $('gpsBadge').textContent = 'GPS Live Broadcast Active';
@@ -158,7 +155,6 @@ function stopGpsBroadcast() {
   if ($('driverCoords')) $('driverCoords').textContent = 'Broadcasting stopped.';
 }
 
-// Subscribe to real-time dispatch list
 function listenToAllOrdersForDrivers() {
   const container = $('driverOrdersContainer');
   if (!container) return;
@@ -182,7 +178,6 @@ function listenToAllOrdersForDrivers() {
   });
 }
 
-// Auth Observer
 onAuthStateChanged(auth, (user) => {
   if (user) {
     if ($('driverSignInBtn')) $('driverSignInBtn').style.display = 'none';

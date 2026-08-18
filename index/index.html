@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Stickers — Workshop</title>
   <meta name="description" content="Custom die-cut stickers, ₹10 each, with ₹10 flat delivery to New Delhi, Rajapuri, and Om Vihar."/>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="index.css">
@@ -23,7 +23,7 @@
 
   <!-- Navigation -->
   <nav class="nav">
-    <a href="#" class="nav-logo">
+    <a href="index.html" class="nav-logo">
       <span class="mark">CS</span>
       Custom<strong>Stickers</strong>
     </a>
@@ -35,13 +35,14 @@
       <a href="#dashboardSection">Dashboard</a>
       <a href="#placeOrderSection">Order Now</a>
       <a href="#myOrdersSection">My Orders</a>
+      <a href="../delivery/delivery.html" style="color:var(--stamp); font-weight:600;">Driver Console</a>
     </div>
     <div class="nav-right">
       <button id="navSignIn" class="btn-primary">Sign In</button>
-      <div id="navUser" style="display:none; align-items:center; gap:10px;">
-        <img id="navAvatar" src="" alt="Your profile picture" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
-        <span id="navUsernameText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600;"></span>
-      </div>
+      <a id="navUser" href="../auth/auth.html?settings" style="display:none; align-items:center; gap:10px; text-decoration:none;">
+        <img id="navAvatar" src="" alt="Your profile picture" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:1px solid var(--ink);">
+        <span id="navUsernameText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600; color:var(--ink);"></span>
+      </a>
     </div>
   </nav>
 
@@ -88,7 +89,7 @@
     </div>
   </header>
 
-  <!-- Dashboard Section (Profile & Stats) -->
+  <!-- Dashboard Section -->
   <section class="section bg-surface reveal" id="dashboardSection" style="display: none;">
     <div class="sec-head">
       <div class="sec-eyebrow">Your Hub</div>
@@ -137,7 +138,7 @@
     </div>
   </section>
 
-  <!-- Real Dispatch Form -->
+  <!-- Order Dispatch Form -->
   <section class="section bg-surface reveal" id="placeOrderSection">
     <div class="sec-head center">
       <div class="sec-eyebrow">Workshop Dispatch</div>
@@ -181,7 +182,7 @@
     </form>
   </section>
 
-  <!-- User Orders Section with Live Map Tracker -->
+  <!-- Orders & Live Tracking Section -->
   <section class="section reveal" id="myOrdersSection">
     <div class="sec-head">
       <div class="sec-eyebrow">Account Ledger</div>
@@ -204,6 +205,7 @@
         <h4>Community</h4>
         <a href="https://www.whatsapp.com/channel/0029VbC5Spn0AgW7cO3rnr2Q" target="_blank" rel="noopener">WhatsApp Channel</a>
         <a href="#categories">Catalog Overview</a>
+        <a href="../delivery/delivery.html">Driver Console</a>
       </div>
       <div class="footer-col">
         <h4>Zones</h4>
